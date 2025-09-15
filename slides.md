@@ -253,6 +253,29 @@ image: https://images.unsplash.com/photo-1556075798-4825dfaaf498?ixlib=rb-4.0.3&
 
 ---
 
+# Multi-Tool Workflows
+
+<v-clicks>
+
+- **Batch operations**: Call multiple tools in single response
+- **Parallel execution**: Run git status + diff + log simultaneously
+- **Performance optimization**: Reduces round-trips
+- **Complex workflows**: Chain dependent operations
+
+</v-clicks>
+
+```bash
+# Parallel git operations
+"Show me git status, recent commits, and current diff"
+
+# Multi-file analysis
+"Check all test files and their coverage simultaneously"
+```
+
+💡 **Pro tip**: Request "in parallel" for faster execution
+
+---
+
 # Documentation Generation
 
 <v-clicks>
@@ -312,6 +335,34 @@ backgroundSize: cover
 
 ---
 
+# Custom Statusline
+
+<v-clicks>
+
+- **Configure context display**: `~/.claude/settings.json` or `/statusline`
+- Shows git branch, status, working directory, custom info
+- Keeps important context visible without asking
+- Reduces repetitive status checks
+
+</v-clicks>
+
+```json
+{
+  "statusline": {
+    "items": [
+      {"type": "git_branch"},
+      {"type": "git_status"},
+      {"type": "cwd"},
+      {"type": "custom", "command": "node -v"}
+    ]
+  }
+}
+```
+
+Perfect for teams wanting standardized context visibility
+
+---
+
 # Custom Slash Commands
 
 <v-clicks>
@@ -354,6 +405,30 @@ Update both the README.md and CLAUDE.md files as appropriate.
 If either file does not exist, please create it. Generate the
 CLAUDE.md file as though the user invoked the init task.
 ```
+
+---
+
+# Hooks & Automation
+
+<v-clicks>
+
+- **Configure shell commands** that execute on tool calls
+- **user-prompt-submit-hook**: Pre-process prompts before execution
+- **Security controls**: Validate and filter operations
+- **Workflow automation**: Chain commands for complex tasks
+- **Location**: Configure in settings or project-specific hooks
+
+</v-clicks>
+
+```bash
+# Example: Auto-format before edits
+echo 'prettier --write $1' > .claude/hooks/pre-edit.sh
+
+# Example: Validate commits
+echo 'npm test && npm run lint' > .claude/hooks/pre-commit.sh
+```
+
+Treat hook feedback as user input - adjust if blocked
 
 ---
 
@@ -404,6 +479,26 @@ image: https://images.unsplash.com/photo-1586953208448-b95a79798f07?ixlib=rb-4.0
 "Generate HTML/CSS for this UI mockup"
 "Explain what this diagram shows"
 "Convert this whiteboard sketch to code"
+```
+
+---
+
+# Jupyter & Data Science Support
+
+<v-clicks>
+
+- **Read .ipynb files** with full cell outputs
+- **Analyze notebooks**: Code, markdown, and visualizations
+- **Edit notebook cells**: Use NotebookEdit tool
+- **Data analysis workflows**: Process datasets and results
+- **Visualization understanding**: Interpret charts and graphs
+
+</v-clicks>
+
+```bash
+"Analyze this Jupyter notebook and explain the data pipeline"
+"Add error handling to the data processing cells"
+"Convert this notebook to a production Python script"
 ```
 
 ---
@@ -585,6 +680,38 @@ for await (const message of query({
 ```
 
 ---
+
+# SDK Real-World Examples
+
+<v-clicks>
+
+### Python Integration
+```python
+from claude_code import query
+async for msg in query("Refactor this module",
+                       context_files=["app.py"],
+                       max_turns=3):
+    print(msg.content)
+```
+
+### CI/CD Pipeline
+```yaml
+# GitHub Actions example
+- name: AI Code Review
+  run: |
+    claude -p "Review PR changes" --output-format json > review.json
+```
+
+### Git Hooks
+```bash
+#!/bin/bash
+# .git/hooks/pre-commit
+claude -p "Check for security issues" --allowed-tools read,grep
+```
+
+</v-clicks>
+
+---
 layout: image-left
 image: https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80
 backgroundSize: cover
@@ -656,6 +783,29 @@ backgroundSize: cover
 
 ---
 
+# Smart Context Management
+
+<v-clicks>
+
+- **Auto-compaction**: Automatic when approaching limits
+- **Warning messages**: Advance notice before compaction
+- **Preservation strategy**: Keeps essential information
+- **Manual control**: Use `/compact` proactively
+- **Long conversations**: Maintains context over hundreds of messages
+
+</v-clicks>
+
+```bash
+# Warning you'll see:
+⚠️ Context limit approaching. Auto-compacting in next response
+to preserve conversation history and continue working.
+
+# Proactive management:
+/compact  # Compress conversation manually
+```
+
+---
+
 # Configuring Permissions
 
 <v-clicks>
@@ -676,6 +826,28 @@ Read(src/*)             # Allow reading source files
 
 # Access permissions UI
 /permissions
+```
+
+---
+
+# Permission Patterns
+
+<v-clicks>
+
+### Common Permission Profiles
+- **Development Mode**: Full access for active coding
+- **Review Mode**: Read-only for code reviews
+- **Safe Mode**: Limited tools for sensitive operations
+- **CI/CD Mode**: Specific tools for automation
+
+</v-clicks>
+
+```bash
+# Quick permission profiles via aliases
+alias claude-dev='claude --allowed-tools all'
+alias claude-review='claude --allowed-tools read,grep'
+alias claude-safe='claude --disabled-tools bash,webfetch'
+alias claude-ci='claude --allowed-tools bash,git,test'
 ```
 
 ---
