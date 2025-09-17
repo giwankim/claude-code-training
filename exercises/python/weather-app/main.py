@@ -6,8 +6,9 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-OWM_ENDPOINT = "https://api.openweathermap.org/data/2.5/weather"
-OWM_FORECAST_ENDPOINT = "https://api.openweathermap.org/data/2.5/forecast"
+# One Call API 3.0 endpoint - combines current, minutely, hourly, and daily data
+OWM_ONECALL_ENDPOINT = "https://api.openweathermap.org/data/3.0/onecall"
+# Geocoding API remains the same
 GEOCODING_API_ENDPOINT = "http://api.openweathermap.org/geo/1.0/direct"
 api_key = os.getenv("OWM_API_KEY")
 # api_key = os.environ.get("OWM_API_KEY")
@@ -32,9 +33,44 @@ def get_weather(city):
     today = datetime.datetime.now()
     current_date = today.strftime("%A, %B %d")
 
+    # List of US state abbreviations and full names
+    us_states_abbrev = {
+        'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+        'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+        'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+        'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+        'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY', 'DC'
+    }
+
+    us_states_full = {
+        'alabama', 'alaska', 'arizona', 'arkansas', 'california', 'colorado',
+        'connecticut', 'delaware', 'florida', 'georgia', 'hawaii', 'idaho',
+        'illinois', 'indiana', 'iowa', 'kansas', 'kentucky', 'louisiana',
+        'maine', 'maryland', 'massachusetts', 'michigan', 'minnesota',
+        'mississippi', 'missouri', 'montana', 'nebraska', 'nevada',
+        'new hampshire', 'new jersey', 'new mexico', 'new york',
+        'north carolina', 'north dakota', 'ohio', 'oklahoma', 'oregon',
+        'pennsylvania', 'rhode island', 'south carolina', 'south dakota',
+        'tennessee', 'texas', 'utah', 'vermont', 'virginia', 'washington',
+        'west virginia', 'wisconsin', 'wyoming'
+    }
+
+    # Check if user entered a US city with state but no country
+    # Formats: "City, ST" or "City, State" -> append ", US"
+    search_query = city_name
+    if ',' in city_name:
+        parts = [p.strip() for p in city_name.split(',')]
+        # If we have exactly 2 parts (city and state)
+        if len(parts) == 2:
+            state_part = parts[1]
+            # Check for state abbreviation or full state name
+            if state_part.upper() in us_states_abbrev or state_part.lower() in us_states_full:
+                search_query = f"{parts[0]}, {state_part}, US"
+                city_name = f"{parts[0]}, {state_part}"  # Keep display name clean
+
     # Get latitude and longitude for city
     location_params = {
-        "q": city_name,
+        "q": search_query,
         "appid": api_key,
         "limit": 3,
     }
@@ -49,32 +85,33 @@ def get_weather(city):
         lat = location_data[0]['lat']
         lon = location_data[0]['lon']
 
-    # Get OpenWeather API data
+    # Get One Call API 3.0 data - combines current, hourly, and daily forecasts
     weather_params = {
         "lat": lat,
         "lon": lon,
         "appid": api_key,
         "units": "metric",
+        "exclude": "minutely,alerts"  # Exclude data we don't need
     }
-    weather_response = requests.get(OWM_ENDPOINT, weather_params)
-    weather_response.raise_for_status()
-    weather_data = weather_response.json()
+    onecall_response = requests.get(OWM_ONECALL_ENDPOINT, weather_params)
+    onecall_response.raise_for_status()
+    onecall_data = onecall_response.json()
 
-    # Get current weather data
-    current_temp = round(weather_data['main']['temp'])
-    current_weather = weather_data['weather'][0]['main']
-    min_temp = round(weather_data['main']['temp_min'])
-    max_temp = round(weather_data['main']['temp_max'])
-    wind_speed = weather_data['wind']['speed']
+    # Get current weather data from One Call API
+    current = onecall_data['current']
+    current_temp = round(current['temp'])
+    current_weather = current['weather'][0]['main']
+    wind_speed = current['wind_speed']
 
-    # Get five-day weather forecast data
-    forecast_response = requests.get(OWM_FORECAST_ENDPOINT, weather_params)
-    forecast_data = forecast_response.json()
+    # Get today's min/max from daily forecast
+    today_daily = onecall_data['daily'][0]
+    min_temp = round(today_daily['temp']['min'])
+    max_temp = round(today_daily['temp']['max'])
 
-    # Make lists of temperature and weather description data to show user
-    five_day_temp_list = [round(item['main']['temp']) for item in forecast_data['list'] if '12:00:00' in item['dt_txt']]
-    five_day_weather_list = [item['weather'][0]['main'] for item in forecast_data['list']
-                             if '12:00:00' in item['dt_txt']]
+    # Get 5-day forecast data from daily array
+    # One Call API provides 8 days of daily forecasts
+    five_day_temp_list = [round(day['temp']['day']) for day in onecall_data['daily'][:5]]
+    five_day_weather_list = [day['weather'][0]['main'] for day in onecall_data['daily'][:5]]
 
     # Get next four weekdays to show user alongside weather data
     five_day_unformatted = [today, today + datetime.timedelta(days=1), today + datetime.timedelta(days=2),
@@ -94,4 +131,4 @@ def error():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5001)
