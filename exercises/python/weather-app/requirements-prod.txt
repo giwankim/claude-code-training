@@ -1,0 +1,15 @@
+# Production dependencies for Weather App
+# Last updated: 2025-09-16
+
+# Web Framework
+Flask==3.0.3
+Werkzeug==3.0.3
+
+# HTTP Client with robust retry capabilities
+requests==2.32.3
+
+# Environment variable management
+python-dotenv==1.0.1
+
+# Production WSGI server
+gunicorn==23.0.0

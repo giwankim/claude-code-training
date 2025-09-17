@@ -14,7 +14,18 @@ logger = logging.getLogger(__name__)
 
 # Initialize Flask app
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key-change-in-production")
+
+# Configure secret key - required for production security
+secret_key = os.getenv("SECRET_KEY")
+if not secret_key:
+    # Allow development without SECRET_KEY, but warn
+    if os.getenv("FLASK_ENV") == "development":
+        logger.warning("SECRET_KEY not set - using development key. NEVER use in production!")
+        app.secret_key = "dev-only-key-" + os.urandom(16).hex()
+    else:
+        raise ValueError("SECRET_KEY environment variable must be set for production")
+else:
+    app.secret_key = secret_key
 
 # Initialize weather service
 api_key = os.getenv("OWM_API_KEY")
