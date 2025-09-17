@@ -1,5 +1,25 @@
 # Weather App
-This weather web app built with Flask and OpenWeather API displays the weather forecast for any city. I designed a simplistic UI to make it easier for the user to find the relevant information. All HTML, CSS, and Python code was written from scratch and the CSS is optimised for mobile and desktop through the use of CSS grid, flexbox, and media queries.
+
+A modern Flask-based weather application that provides real-time weather data and 5-day forecasts using the OpenWeatherMap API 3.0. Features a simplistic UI optimized for both mobile and desktop through CSS grid, flexbox, and media queries.
+
+## Recent Improvements (2025)
+
+- **API Migration**: Updated to OpenWeatherMap One Call API 3.0
+- **Architecture**: Refactored with modular service layer and proper separation of concerns
+- **Error Handling**: Comprehensive error recovery with automatic retry logic
+- **US City Search**: Smart detection of US states with automatic country code appending
+- **Testing**: Added 70 E2E tests using Playwright across 5 browser environments
+- **Documentation**: Added architecture diagrams and comprehensive documentation
+
+## Features
+
+- 🌡️ Real-time weather data with current temperature, humidity, wind speed
+- 📅 5-day weather forecast with daily temperatures
+- 🗺️ Smart US city search (e.g., "Austin, TX" automatically becomes "Austin, TX, US")
+- 🌍 Global city search with geocoding
+- 📱 Responsive design for mobile and desktop
+- ⚡ Robust error handling with user-friendly messages
+- 🔄 Automatic retry logic for server errors
 
 ## Screenshots (Desktop)
 <img src="/screenshots/weather_app_desktop_home_page_screenshot.png">
@@ -9,7 +29,65 @@ This weather web app built with Flask and OpenWeather API displays the weather f
 ## Screenshots (Mobile)
 <img src="/screenshots/weather_app_iphone_forecast_page_screenshot.png" style="width:400px;"> <img src="/screenshots/weather_app_iphone_home_page_screenshot.png" style="width:400px;">
 
-## Reflection
+## Quick Start
+
+### Prerequisites
+- Python 3.11+
+- OpenWeatherMap API key (One Call API 3.0 subscription)
+- Node.js (for running tests)
+
+### Installation
+
+1. Clone the repository and navigate to the weather app:
+```bash
+cd exercises/python/weather-app
+```
+
+2. Create and activate a virtual environment:
+```bash
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+```
+
+3. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+4. Set up environment variables:
+```bash
+# Create .env file with your API key
+echo "OWM_API_KEY=your_api_key_here" > .env
+```
+
+5. Run the application:
+```bash
+python main.py
+```
+
+The app will be available at `http://localhost:5001`
+
+## Architecture
+
+The application now follows a modular architecture:
+- `main.py` - Flask routes and application logic
+- `weather_service.py` - OpenWeatherMap API integration with error handling
+- `templates/` - Jinja2 HTML templates
+- `static/` - CSS and image assets
+- `tests/` - Playwright E2E tests
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed system design and diagrams.
+
+## Testing
+
+Run the comprehensive E2E test suite:
+```bash
+npm install  # First time only
+npm test     # Run all tests
+npm run test:report  # View HTML report
+```
+
+## Original Author's Reflection
 Building a Python project from scratch without relying on a tutorial taught me a lot but I was also able to implement the app's key functionality (getting and displaying weather data) due to the work I did with APIs in Angela Yu's Python bootcamp. While deploying this web app, I  learned about git and version control as well as storing API keys as environment variables with .env and the purpose of .gitignore. This project turned out to be frustrating and complicated at times but I learned and grew a lot as a developer by tackling each problem. For instance, I struggled to make this website responsive because I discovered that the Chrome browser tools are not entirely accurate for the mobile view. Hence, when the app was deployed, the website didn't look the way I expected ore desired on mobile. So I switched to a free desktop application called Responsively and it provided views for multiple devices which allowed me to improve my CSS. In addition, I had difficulty positioning my footer at the bottom of my page and had to refer to [this resource](https://stackoverflow.com/questions/51683107/making-a-footer-stay-at-the-bottom-of-the-page-both-in-mobile-view-and-desktop-v) to adjust my CSS accordingly. 
 
 If I were to do this project again, there are a few changes I would make. I would make the website render beautifully on iPads as well by eliminating the space between elements. I also wasn't sure how to add more functionality to this app while maintaining a seamless UI/UX design this time and I would love to do so in the future. E.g. I could add an option for users to specify the country of the city they enter (if multiple countries share the same city name). I could also display the low and high temperatures for each day in the five day forecast instead of only displaying the temperature at noon (which I understand is not an accurate estimate of the overall temperature). It would also be useful to enable location detection to allow the user to get more accurate weather data for their current location by using their precise coordinates instead of relying on the geocoding API provided by OpenWeather.  
