@@ -1,133 +1,162 @@
 import datetime
-import requests
 import string
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 import os
 from dotenv import load_dotenv
+import logging
+from weather_service import WeatherService, WeatherAPIError
+
 load_dotenv()
 
-# One Call API 3.0 endpoint - combines current, minutely, hourly, and daily data
-OWM_ONECALL_ENDPOINT = "https://api.openweathermap.org/data/3.0/onecall"
-# Geocoding API remains the same
-GEOCODING_API_ENDPOINT = "http://api.openweathermap.org/geo/1.0/direct"
-api_key = os.getenv("OWM_API_KEY")
-# api_key = os.environ.get("OWM_API_KEY")
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
+# Initialize Flask app
 app = Flask(__name__)
+app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key-change-in-production")
+
+# Initialize weather service
+api_key = os.getenv("OWM_API_KEY")
+if not api_key:
+    raise ValueError("OWM_API_KEY environment variable not set")
+
+weather_service = WeatherService(api_key)
+
+# US states for enhancement
+US_STATES_ABBREV = {
+    'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+    'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+    'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+    'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+    'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY', 'DC'
+}
+
+US_STATES_FULL = {
+    'alabama', 'alaska', 'arizona', 'arkansas', 'california', 'colorado',
+    'connecticut', 'delaware', 'florida', 'georgia', 'hawaii', 'idaho',
+    'illinois', 'indiana', 'iowa', 'kansas', 'kentucky', 'louisiana',
+    'maine', 'maryland', 'massachusetts', 'michigan', 'minnesota',
+    'mississippi', 'missouri', 'montana', 'nebraska', 'nevada',
+    'new hampshire', 'new jersey', 'new mexico', 'new york',
+    'north carolina', 'north dakota', 'ohio', 'oklahoma', 'oregon',
+    'pennsylvania', 'rhode island', 'south carolina', 'south dakota',
+    'tennessee', 'texas', 'utah', 'vermont', 'virginia', 'washington',
+    'west virginia', 'wisconsin', 'wyoming'
+}
 
 
-# Display home page and get city name entered into search form
+def enhance_us_city_search(city_name):
+    """Enhance US city searches by adding country code when appropriate"""
+    if ',' in city_name:
+        parts = [p.strip() for p in city_name.split(',')]
+        if len(parts) == 2:
+            state_part = parts[1]
+            if state_part.upper() in US_STATES_ABBREV or state_part.lower() in US_STATES_FULL:
+                return f"{parts[0]}, {state_part}, US"
+    return city_name
+
+
 @app.route("/", methods=["GET", "POST"])
 def home():
+    """Display home page and handle city search"""
     if request.method == "POST":
         city = request.form.get("search")
+        if not city:
+            flash("Please enter a city name", "warning")
+            return render_template("index.html")
         return redirect(url_for("get_weather", city=city))
     return render_template("index.html")
 
 
-# Display weather forecast for specific city using data from OpenWeather API
 @app.route("/<city>", methods=["GET", "POST"])
 def get_weather(city):
-    # Format city name and get current date to display on page
-    city_name = string.capwords(city)
-    today = datetime.datetime.now()
-    current_date = today.strftime("%A, %B %d")
+    """Display weather forecast for specific city"""
+    try:
+        # Format city name
+        city_name = string.capwords(city)
 
-    # List of US state abbreviations and full names
-    us_states_abbrev = {
-        'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
-        'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
-        'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
-        'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
-        'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY', 'DC'
-    }
+        # Enhance US city search
+        search_query = enhance_us_city_search(city_name)
 
-    us_states_full = {
-        'alabama', 'alaska', 'arizona', 'arkansas', 'california', 'colorado',
-        'connecticut', 'delaware', 'florida', 'georgia', 'hawaii', 'idaho',
-        'illinois', 'indiana', 'iowa', 'kansas', 'kentucky', 'louisiana',
-        'maine', 'maryland', 'massachusetts', 'michigan', 'minnesota',
-        'mississippi', 'missouri', 'montana', 'nebraska', 'nevada',
-        'new hampshire', 'new jersey', 'new mexico', 'new york',
-        'north carolina', 'north dakota', 'ohio', 'oklahoma', 'oregon',
-        'pennsylvania', 'rhode island', 'south carolina', 'south dakota',
-        'tennessee', 'texas', 'utah', 'vermont', 'virginia', 'washington',
-        'west virginia', 'wisconsin', 'wyoming'
-    }
+        # Get weather data using the service
+        weather_data, location_name = weather_service.get_weather_for_city(search_query)
 
-    # Check if user entered a US city with state but no country
-    # Formats: "City, ST" or "City, State" -> append ", US"
-    search_query = city_name
-    if ',' in city_name:
-        parts = [p.strip() for p in city_name.split(',')]
-        # If we have exactly 2 parts (city and state)
-        if len(parts) == 2:
-            state_part = parts[1]
-            # Check for state abbreviation or full state name
-            if state_part.upper() in us_states_abbrev or state_part.lower() in us_states_full:
-                search_query = f"{parts[0]}, {state_part}, US"
-                city_name = f"{parts[0]}, {state_part}"  # Keep display name clean
+        # Get current date
+        today = datetime.datetime.now()
+        current_date = today.strftime("%A, %B %d")
 
-    # Get latitude and longitude for city
-    location_params = {
-        "q": search_query,
-        "appid": api_key,
-        "limit": 3,
-    }
+        # Generate day names for forecast
+        five_day_dates_list = [
+            (today + datetime.timedelta(days=i)).strftime("%a")
+            for i in range(5)
+        ]
 
-    location_response = requests.get(GEOCODING_API_ENDPOINT, params=location_params)
-    location_data = location_response.json()
+        # Prepare template data
+        template_data = {
+            'city_name': location_name,
+            'current_date': current_date,
+            'current_temp': weather_data['current_temp'],
+            'current_weather': weather_data['current_weather'],
+            'min_temp': weather_data['min_temp'],
+            'max_temp': weather_data['max_temp'],
+            'wind_speed': weather_data['wind_speed'],
+            'five_day_temp_list': weather_data['five_day_temps'],
+            'five_day_weather_list': weather_data['five_day_weather'],
+            'five_day_dates_list': five_day_dates_list,
+            'humidity': weather_data['humidity'],
+            'feels_like': weather_data['feels_like'],
+            'visibility': weather_data['visibility'],
+            'uvi': weather_data['uvi']
+        }
 
-    # Prevent IndexError if user entered a city name with no coordinates by redirecting to error page
-    if not location_data:
+        # Add AI summary if available
+        if 'daily_summary' in weather_data:
+            template_data['weather_summary'] = weather_data['daily_summary']
+
+        return render_template("city.html", **template_data)
+
+    except WeatherAPIError as e:
+        # Log the error
+        logger.error(f"Weather API error for city '{city}': {e}")
+
+        # Handle specific error codes
+        if e.code == 404:
+            flash(f"City '{city}' not found. Please check the spelling and try again.", "error")
+        elif e.code == 401:
+            flash("Weather service authentication error. Please contact support.", "error")
+        elif e.code == 429:
+            flash("Too many requests. Please try again in a few minutes.", "warning")
+        else:
+            flash(f"Weather service error: {str(e)}", "error")
+
         return redirect(url_for("error"))
-    else:
-        lat = location_data[0]['lat']
-        lon = location_data[0]['lon']
 
-    # Get One Call API 3.0 data - combines current, hourly, and daily forecasts
-    weather_params = {
-        "lat": lat,
-        "lon": lon,
-        "appid": api_key,
-        "units": "metric",
-        "exclude": "minutely,alerts"  # Exclude data we don't need
-    }
-    onecall_response = requests.get(OWM_ONECALL_ENDPOINT, weather_params)
-    onecall_response.raise_for_status()
-    onecall_data = onecall_response.json()
-
-    # Get current weather data from One Call API
-    current = onecall_data['current']
-    current_temp = round(current['temp'])
-    current_weather = current['weather'][0]['main']
-    wind_speed = current['wind_speed']
-
-    # Get today's min/max from daily forecast
-    today_daily = onecall_data['daily'][0]
-    min_temp = round(today_daily['temp']['min'])
-    max_temp = round(today_daily['temp']['max'])
-
-    # Get 5-day forecast data from daily array
-    # One Call API provides 8 days of daily forecasts
-    five_day_temp_list = [round(day['temp']['day']) for day in onecall_data['daily'][:5]]
-    five_day_weather_list = [day['weather'][0]['main'] for day in onecall_data['daily'][:5]]
-
-    # Get next four weekdays to show user alongside weather data
-    five_day_unformatted = [today, today + datetime.timedelta(days=1), today + datetime.timedelta(days=2),
-                            today + datetime.timedelta(days=3), today + datetime.timedelta(days=4)]
-    five_day_dates_list = [date.strftime("%a") for date in five_day_unformatted]
-
-    return render_template("city.html", city_name=city_name, current_date=current_date, current_temp=current_temp,
-                           current_weather=current_weather, min_temp=min_temp, max_temp=max_temp, wind_speed=wind_speed,
-                           five_day_temp_list=five_day_temp_list, five_day_weather_list=five_day_weather_list,
-                           five_day_dates_list=five_day_dates_list)
+    except Exception as e:
+        # Catch any unexpected errors
+        logger.error(f"Unexpected error for city '{city}': {e}")
+        flash("An unexpected error occurred. Please try again later.", "error")
+        return redirect(url_for("error"))
 
 
-# Display error page for invalid input
 @app.route("/error")
 def error():
+    """Display error page with any flashed messages"""
     return render_template("error.html")
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    """Handle 404 errors"""
+    return render_template("error.html"), 404
+
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    """Handle 500 errors"""
+    logger.error(f"Internal server error: {e}")
+    flash("Internal server error. Please try again later.", "error")
+    return render_template("error.html"), 500
 
 
 if __name__ == "__main__":
