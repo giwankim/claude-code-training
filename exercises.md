@@ -140,3 +140,429 @@ This project represents a current, common stack, ideal for demonstrating advance
 
 *   **Demo: Deployment & DevOps Tasks**
     *   **Prompt:** `First, explain the heroku-deploy.sh script. Then, create a multi-stage Dockerfile to build and run this Spring Boot application efficiently.`
+
+---
+
+## Advanced Features Demonstrations
+
+This section covers demonstrations for the newest Claude Code features: Skills, Plugins, Output Styles, Hooks, and Subagents. These demos showcase cutting-edge capabilities suitable for enterprise development teams.
+
+---
+
+### 6. Skills: Persistent Domain Expertise
+
+**Project:** Any project (demonstrate with `certificate-service` for Java)
+
+Skills provide persistent, reusable knowledge that activates automatically when contextually relevant. They use a three-tier loading system for efficiency.
+
+**Demo Sequence:**
+
+*   **Demo: Built-in Skills - Document Generation**
+    *   Show how built-in skills activate automatically
+    *   **Prompt:** `Create a professional PDF report documenting the certificate service API. Include endpoint descriptions, request/response examples, and usage instructions.`
+    *   **Observe:** The PDF skill loads automatically
+    *   **Point out:** No manual skill activation needed - it's contextual
+
+*   **Demo: Installing a Custom Skill**
+    ```bash
+    # Show the skill directory structure
+    ls -la skills-and-plugins/spring-boot-skill/
+
+    # Install it locally
+    cp -r skills-and-plugins/spring-boot-skill ~/.claude/skills/
+    ```
+
+    *   **Prompt:** `Create a new Spring Boot REST controller for handling training certificates with full CRUD operations.`
+    *   **Observe:** The Spring Boot skill activates, applying team standards automatically
+    *   **Point out:** Notice constructor injection, JavaDoc, proper package structure
+
+*   **Exercise: Create Your Own Skill**
+    *   **Prompt:** `Help me create a custom skill for our team's testing standards. It should enforce:
+        - Use of AssertJ for assertions
+        - @DisplayName annotations on all tests
+        - Given-When-Then comment structure
+        - Proper test isolation
+        Save it to ~/.claude/skills/team-testing-standards/`
+    *   **Follow up:** `Now write tests for CertificateService using this new skill`
+    *   **Observe:** The skill activates and applies your standards
+
+*   **Discussion Points:**
+    - Skills persist across conversations (unlike one-time prompts)
+    - Three-tier loading: metadata (always), instructions (when triggered), resources (as needed)
+    - Skills vs. custom commands: When to use each
+    - Team collaboration: Sharing skills via version control
+
+---
+
+### 7. Plugins: Team-Wide Standardization
+
+**Project:** Demonstration without active coding
+
+Plugins bundle commands, skills, hooks, and MCP servers into installable packages for team distribution.
+
+**Demo Sequence:**
+
+*   **Demo: Plugin Architecture**
+    *   Open and review `skills-and-plugins/plugin-examples/team-standards-plugin.md`
+    *   Show the plugin.json structure
+    *   Explain how plugins bundle multiple capabilities:
+        - Custom slash commands
+        - Domain-specific skills
+        - Validation hooks
+        - MCP server configurations
+        - Team templates
+
+*   **Demo: Plugin Use Cases**
+    *   **Enterprise scenario:** "Imagine Acme Corp has 50 Java developers"
+    *   **Problem:** How do you ensure consistent:
+        - Code generation patterns
+        - Security review processes
+        - API standards
+        - Testing approaches
+    *   **Solution:** Create an `acme-corp-standards` plugin
+    *   **Distribution:** `/plugin install acme-corp-standards`
+    *   **Result:** All developers instantly get:
+        - `/service` command for Spring Boot services
+        - Security review hooks
+        - Internal API MCP servers
+        - Company-wide skills
+
+*   **Demo: Plugin Marketplace Configuration**
+    *   Show `~/.claude/settings.json` configuration:
+    ```json
+    {
+      "extraKnownMarketplaces": [
+        {
+          "name": "Acme Internal",
+          "url": "https://plugins.acme.corp/marketplace.json"
+        }
+      ]
+    }
+    ```
+    *   Explain marketplace discoverability vs. direct installation
+
+*   **Exercise: Design Your Team's Plugin**
+    *   Have students design (not implement) a plugin for their organization
+    *   Questions to guide them:
+        - What commands would save your team time?
+        - What skills encode your best practices?
+        - What hooks enforce quality gates?
+        - What internal systems need MCP integration?
+    *   Share designs with the class
+
+*   **Discussion Points:**
+    - Plugin versioning and updates
+    - Project vs. user-level plugin installation
+    - Security considerations for plugin distribution
+    - Building a team culture around shared tooling
+
+---
+
+### 8. Output Styles: Adaptive Communication
+
+**Project:** Any project (use `weather-app` for variety)
+
+Output styles customize how Claude presents solutions to match different contexts and learning preferences.
+
+**Demo Sequence:**
+
+*   **Demo: Built-in Styles Comparison**
+    ```bash
+    # Start with explanatory style
+    claude --output-style explanatory
+    ```
+
+    *   **Prompt:** `Explain how the weather API integration works in this Flask app`
+    *   **Note:** Observe verbose, educational explanations
+
+    Exit and restart:
+    ```bash
+    claude --output-style learning
+    ```
+
+    *   **Same Prompt:** `Explain how the weather API integration works in this Flask app`
+    *   **Compare:** Even more detailed, step-by-step teaching approach
+
+*   **Demo: Creating Custom Output Styles**
+    *   **Scenario:** "In production, we want concise, expert-level responses"
+    *   **Prompt:** `Create a custom output style called 'production' with these characteristics:
+        - Concise and action-focused
+        - Skip explanations unless explicitly asked
+        - Assume expert-level knowledge
+        - Show code without preambles
+        - Use technical terminology freely
+        Save it to ~/.claude/output-styles/production.md`
+
+    *   **Test it:**
+    ```bash
+    claude --output-style production
+    ```
+
+    *   **Same Prompt:** `Explain how the weather API integration works`
+    *   **Compare:** Notice the terse, expert-oriented response
+
+*   **Demo: When to Use Each Style**
+    *   **Explanatory:** Onboarding new team members, code reviews
+    *   **Learning:** Training sessions, teaching unfamiliar concepts
+    *   **Production:** Experienced developers, quick fixes
+    *   **Custom:** Match your team's communication culture
+
+*   **Exercise: Style for Your Context**
+    *   **Prompt:** `Create an output style for code review sessions that:
+        - Focuses on potential issues and improvements
+        - Provides specific fix recommendations
+        - Explains the reasoning behind suggestions
+        - Uses a constructive, collaborative tone`
+    *   Test with: `Review the error handling in weather_service.py`
+
+*   **Discussion Points:**
+    - Output styles don't change Claude's capabilities, only presentation
+    - Can be set per-session or as default
+    - Consider creating styles for different team roles
+    - Balance verbosity with developer experience level
+
+---
+
+### 9. Hooks: Workflow Automation
+
+**Project:** `weather-app` or `certificate-service`
+
+Hooks execute shell commands in response to Claude Code events, enabling sophisticated workflow automation.
+
+**Demo Sequence:**
+
+*   **Demo: SessionEnd Hook**
+    ```bash
+    # Install the session summary hook
+    cp hooks-examples/session-end-summary.sh ~/.claude/hooks/
+    chmod +x ~/.claude/hooks/session-end-summary.sh
+    ```
+
+    *   **Prompt:** `Configure a sessionEnd hook in my settings.json to run ~/.claude/hooks/session-end-summary.sh`
+    *   Work through a few file edits and commits
+    *   Exit Claude Code
+    *   **Show:** The generated session summary with statistics
+
+*   **Demo: PreToolUse Hook - Security Validation**
+    ```bash
+    # Install security validator
+    cp hooks-examples/security-validator.sh ~/.claude/hooks/
+    chmod +x ~/.claude/hooks/security-validator.sh
+    ```
+
+    *   **Prompt:** `Add a preToolUse hook for Write operations that runs security-validator.sh`
+
+    *   **Test it - This should BLOCK:**
+    *   **Prompt:** `Create a config.py file with: API_KEY = "sk_live_1234567890abcdef"`
+    *   **Observe:** Hook blocks the operation, explains the security issue
+
+    *   **Fix it:**
+    *   **Prompt:** `Update that to use environment variables: API_KEY = os.getenv("API_KEY")`
+    *   **Observe:** Hook allows the operation
+
+*   **Demo: PreToolUse Hook - Auto-Formatting**
+    ```bash
+    # Install formatter hook
+    cp hooks-examples/pre-edit-formatter.sh ~/.claude/hooks/
+    chmod +x ~/.claude/hooks/pre-edit-formatter.sh
+    ```
+
+    *   **Prompt:** `Add a preToolUse hook for Edit operations that auto-formats files`
+    *   Make an edit to a Python file with poor formatting
+    *   **Observe:** Hook auto-formats before the edit is applied
+    *   **Point out:** Hooks run transparently, maintaining code quality
+
+*   **Demo: Hook Feedback is User Input**
+    *   When a hook blocks an operation, its output appears as if from the user
+    *   Claude adjusts behavior based on hook feedback
+    *   This creates a collaborative safety net
+
+*   **Exercise: Build a Test Runner Hook**
+    *   **Prompt:** `Create a hook that runs pytest before any git commit operation. If tests fail, block the commit.`
+    *   **Test it:** Make a change that breaks tests, attempt to commit
+    *   **Observe:** Hook prevents broken code from being committed
+
+*   **Discussion Points:**
+    - Exit code 0 = allow, non-zero = block
+    - Hooks should be fast (they run synchronously)
+    - Use hooks for: validation, formatting, security, backups
+    - Project vs. user-level hook configuration
+    - Hook can modify tool inputs (v2.0.10+)
+
+---
+
+### 10. Subagents: Specialized Task Handlers
+
+**Project:** `flask-api` for comprehensive demonstration
+
+Subagents are autonomous specialized agents that Claude launches automatically for specific task types.
+
+**Demo Sequence:**
+
+*   **Demo: Exploring Subagent Types**
+    *   **Prompt:** `Explain which subagents you use and when each activates automatically`
+    *   **Review:** Plan, Explore, Testing, Documentation subagents
+    *   **Key point:** You don't manually select these - Claude chooses optimally
+
+*   **Demo: Plan Subagent (Plan Mode)**
+    *   Press `Shift+Tab+Tab` to activate Plan Mode
+    *   **Prompt:** `Plan a comprehensive refactoring to modernize this Flask app with blueprints, better error handling, and structured logging`
+    *   **Observe:** Plan subagent creates detailed strategy
+    *   **Point out:** This uses strategic decomposition, different from direct execution
+    *   Approve the plan and watch step-by-step execution
+
+*   **Demo: Explore Subagent**
+    *   **Prompt:** `Find all API endpoints in this codebase and explain their authentication requirements`
+    *   **Observe:** Explore subagent activates automatically
+    *   **Point out:** Faster than general-purpose exploration
+    *   **Show:** Systematic codebase search results
+
+*   **Demo: Testing Subagent**
+    *   **Prompt:** `Generate comprehensive test coverage for all API endpoints with edge cases and error scenarios`
+    *   **Observe:** Testing subagent generates structured test suite
+    *   **Point out:** Specialized knowledge of testing frameworks and patterns
+
+*   **Demo: Documentation Subagent**
+    *   **Prompt:** `Create complete API documentation for all endpoints with examples and error codes`
+    *   **Observe:** Documentation subagent produces professional docs
+    *   **Point out:** Different writing style than general responses
+
+*   **Demo: Model Selection for Subagents**
+    *   Explain that different subagents can use different models
+    *   Fast subagents (Explore) might use Haiku
+    *   Complex subagents (Plan) might use Opus
+    *   This optimizes both cost and performance
+
+*   **Discussion Points:**
+    - Subagents are transparent - you see when they activate
+    - They're automatic - no manual selection needed
+    - They specialize both tools and reasoning
+    - Different from custom commands (which are templates)
+    - Think of them as "expert consultants" Claude calls in
+
+---
+
+### 11. Orchestrating Multiple Features
+
+**Project:** `certificate-service` (final comprehensive demo)
+
+Demonstrate how Skills, Hooks, Output Styles, and Subagents work together seamlessly.
+
+**Demo Sequence:**
+
+*   **Setup: Configure the Environment**
+    ```bash
+    # Ensure skills are installed
+    ls ~/.claude/skills/spring-boot-skill/
+
+    # Ensure hooks are configured
+    cat ~/.claude/settings.json  # Show security hook
+
+    # Set production output style
+    claude --output-style production
+    ```
+
+*   **Demo: Complete Feature Development**
+    *   Activate Plan Mode: `Shift+Tab+Tab`
+    *   **Prompt:** `Plan and implement a new training transcript PDF generation feature with:
+        - REST controller following our Spring Boot standards
+        - Service layer with business logic
+        - Comprehensive tests
+        - API documentation
+        - Security validation (no secrets in code)
+        Generate the PDF documentation when done.`
+
+    *   **Observe the Orchestration:**
+        1. Plan subagent creates implementation strategy
+        2. Spring Boot skill activates for code generation
+        3. Security hook validates no hardcoded secrets
+        4. Testing skill ensures proper test coverage
+        5. PDF skill generates documentation
+        6. Production style keeps responses concise
+
+    *   **Point out:** All features working together automatically
+
+*   **Demo: Session Wrap-up**
+    *   Complete some commits
+    *   Exit Claude Code
+    *   **Show:** SessionEnd hook generates summary
+    *   Review what was accomplished with all tools working together
+
+*   **Reflection Questions:**
+    - Which features provided the most value?
+    - How would you configure this for your team?
+    - What custom skills would help your workflow?
+    - What hooks would enforce your quality gates?
+
+---
+
+## Teaching Tips for Advanced Features
+
+**Pacing:**
+- Introduce one feature at a time
+- Show before explaining - demos are more powerful than theory
+- Let students experiment immediately after each demo
+
+**Common Questions:**
+
+*Q: When should I use a skill vs. a custom command?*
+- **Skills:** Persistent domain expertise that activates contextually
+- **Commands:** Quick shortcuts for repetitive prompts
+- **Example:** Spring Boot standards = skill; "create service" = command
+
+*Q: Are hooks required?*
+- No, they're optional workflow enhancements
+- Start without hooks, add as needs arise
+- Great for teams with strict quality gates
+
+*Q: Do output styles affect code quality?*
+- No, only presentation style
+- Same underlying capabilities and reasoning
+- Choose based on context and audience
+
+*Q: Can I control which subagent activates?*
+- No, Claude selects automatically for optimal results
+- Trust the system - it's designed to choose correctly
+- Plan Mode is the only manually triggered subagent
+
+**Troubleshooting:**
+
+*Skills not activating:*
+- Check YAML frontmatter format
+- Verify directory location (~/.claude/skills/)
+- Skill descriptions must match task context
+
+*Hooks failing silently:*
+- Check execute permissions (chmod +x)
+- Validate JSON syntax in settings
+- Review hook script for errors
+
+*Output style not applying:*
+- Verify file location (~/.claude/output-styles/)
+- Check YAML frontmatter
+- Restart claude with --output-style flag
+
+---
+
+## Course Conclusion: Bringing It All Together
+
+After completing all demonstrations and exercises, students should understand:
+
+1. **Core Features:** Code generation, exploration, testing, documentation
+2. **Customization:** CLAUDE.md, custom commands, output styles
+3. **Extensibility:** Skills, plugins, MCP integration
+4. **Automation:** Hooks for validation and workflow
+5. **Intelligence:** Subagents for specialized tasks
+6. **Enterprise Practices:** Security, team collaboration, quality gates
+
+**Final Exercise:** Have students design their ideal Claude Code setup for their organization, including:
+- Which skills they would create
+- What hooks would enforce quality
+- How they would structure a team plugin
+- Which output styles match their culture
+
+**Next Steps:**
+- Practice with real work projects
+- Share configurations with team
+- Contribute to plugin ecosystem
+- Stay updated on new features

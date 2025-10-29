@@ -81,7 +81,9 @@ Kousen IT, Inc.
   - Code exploration and understanding
   - Testing and quality assurance
   - Git operations and version control
-  - Advanced features (Plan Mode, MCP, SDKs)
+  - Customization (CLAUDE.md, custom commands, hooks, output styles)
+  - Extensibility (Skills, Plugins, MCP integration)
+  - Advanced features (Plan Mode, Subagents, Extended Thinking, SDKs)
 - **Hands-on Labs**: Multiple exercises with real codebases
 - **Prerequisites**: Command-line experience, development background
 
@@ -412,23 +414,114 @@ CLAUDE.md file as though the user invoked the init task.
 
 <v-clicks>
 
-- **Configure shell commands** that execute on tool calls
-- **user-prompt-submit-hook**: Pre-process prompts before execution
-- **Security controls**: Validate and filter operations
-- **Workflow automation**: Chain commands for complex tasks
-- **Location**: Configure in settings or project-specific hooks
+- **Event-driven workflow automation** through shell commands
+- **Multiple hook types**: SessionEnd, PreToolUse, and custom hooks
+- **PreToolUse hooks**: Modify tool inputs before execution (v2.0.10+)
+- **SessionEnd hooks**: Clean up or finalize work when session ends (v1.0.85+)
+- **Security controls**: Validate and filter operations before they run
+- **Post-tool condensing**: Automatically summarize verbose output
+- **Configuration**: `~/.claude/settings.json` or `.claude/settings.json`
 
 </v-clicks>
 
-```bash
-# Example: Auto-format before edits
-echo 'prettier --write $1' > .claude/hooks/pre-edit.sh
+---
 
-# Example: Validate commits
-echo 'npm test && npm run lint' > .claude/hooks/pre-commit.sh
+# Hook Examples
+
+<v-clicks>
+
+### Security & Validation
+```bash
+# Pre-validate file edits
+{
+  "hooks": {
+    "preToolUse": {
+      "Edit": "validate-edit.sh"
+    }
+  }
+}
 ```
 
-Treat hook feedback as user input - adjust if blocked
+### Workflow Automation
+```bash
+# Auto-format on file write
+{
+  "hooks": {
+    "preToolUse": {
+      "Write": "prettier --write $FILE"
+    }
+  }
+}
+```
+
+### Session Management
+```bash
+# SessionEnd: Generate summary report
+{
+  "hooks": {
+    "sessionEnd": "generate-session-report.sh"
+  }
+}
+```
+
+</v-clicks>
+
+**Important**: Treat hook feedback as user input - Claude adjusts if blocked
+
+---
+
+# Output Styles
+
+<v-clicks>
+
+- **Customize how Claude presents solutions** to match learning preferences
+- **Built-in styles**: "Explanatory" and "Learning" modes
+- **Custom styles**: Create your own in `~/.claude/output-styles/`
+- **Configure via settings**: Set default style or switch per-session
+- **Use cases**:
+  - Educational contexts (verbose explanations)
+  - Production work (concise, action-focused)
+  - Code review (detailed analysis)
+  - Quick fixes (minimal commentary)
+
+</v-clicks>
+
+---
+
+# Output Style Configuration
+
+<v-clicks>
+
+### Using Built-in Styles
+```bash
+# Configure in settings.json
+{
+  "outputStyle": "explanatory"  // or "learning"
+}
+```
+
+### Creating Custom Styles
+Create `~/.claude/output-styles/my-style.md`:
+```markdown
+---
+name: Production
+description: Concise output for experienced developers
+---
+
+# Instructions for Claude
+
+- Be concise and action-focused
+- Skip explanations unless asked
+- Show code without lengthy preambles
+- Assume expert-level knowledge
+```
+
+### Switching Styles
+```bash
+claude --output-style production
+```
+
+</v-clicks>
 
 ---
 
@@ -519,6 +612,129 @@ backgroundSize: cover
 </div>
 
 ---
+
+# Skills: Persistent Domain Expertise
+
+<v-clicks>
+
+- **Modular capabilities** that extend Claude's functionality beyond the base model
+- **Three-tier loading system** for efficiency:
+  - Metadata (always loaded): Name and description (~100 tokens)
+  - Instructions (triggered): Main SKILL.md with procedures
+  - Resources (on-demand): Scripts, templates, reference files
+- **Automatic activation** when contextually relevant
+- **Filesystem-based** knowledge that persists across conversations
+- **Progressive disclosure**: Load only what's needed for each task
+
+</v-clicks>
+
+---
+
+# Built-in Skills
+
+<v-clicks>
+
+Anthropic provides four production-ready Agent Skills:
+
+- **📊 Excel (xlsx)**: Build spreadsheets, generate reports with charts
+- **📄 Word (docx)**: Create and format professional documents
+- **📽️ PowerPoint (pptx)**: Create and edit presentations
+- **📑 PDF (pdf)**: Generate formatted PDF documents and reports
+
+**Usage**: These skills activate automatically when you reference relevant file types or request document creation
+
+</v-clicks>
+
+```bash
+# Skills activate automatically
+"Create a quarterly report spreadsheet with sales data"
+"Generate a PDF proposal document with our company branding"
+"Build a presentation deck for the product launch"
+```
+
+---
+
+# Creating Custom Skills
+
+<v-clicks>
+
+### Skill Structure
+```
+~/.claude/skills/my-skill/
+├── SKILL.md          # Required: Instructions with YAML frontmatter
+├── templates/        # Optional: Reusable templates
+├── scripts/          # Optional: Helper scripts
+└── reference/        # Optional: Documentation, schemas
+```
+
+### Example SKILL.md
+```markdown
+---
+name: Java Spring Generator
+description: Generate Spring Boot components following team patterns
+---
+
+# Instructions
+
+When generating Spring Boot code:
+1. Use constructor injection, not @Autowired
+2. Follow package conventions: controller/service/repository
+3. Include comprehensive JavaDoc
+4. Generate corresponding test files with @SpringBootTest
+```
+
+</v-clicks>
+
+---
+
+# Plugins: Team-Wide Extensibility
+
+<v-clicks>
+
+- **Plugin system** (v2.0.12+) provides installable packages of commands, agents, hooks, and MCP servers
+- **Plugin marketplace**: Discover and share team workflows
+- **Repository-level config**: `extraKnownMarketplaces` for enterprise control
+- **Management commands**:
+  - `/plugin install <name>` - Install from marketplace
+  - `/plugin enable/disable <name>` - Control active plugins
+  - `/plugin marketplace` - Browse available plugins
+  - `/plugin list` - View installed plugins
+
+</v-clicks>
+
+---
+
+# Plugin Use Cases
+
+<v-clicks>
+
+### Enterprise Workflows
+- Standardize code generation patterns across teams
+- Enforce security review processes
+- Automate compliance documentation
+- Integrate with internal tools and APIs
+
+### Team Collaboration
+- Share custom commands and agents
+- Distribute MCP server configurations
+- Maintain consistent development practices
+- Onboard new team members faster
+
+### Example
+```bash
+# Install company's internal plugin
+/plugin install acme-corp-standards
+
+# Plugin provides:
+# - Custom slash commands for service generation
+# - Security review hooks
+# - MCP servers for internal APIs
+# - Pre-configured output styles
+```
+
+</v-clicks>
+
+---
 layout: image-right
 image: https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80
 ---
@@ -556,6 +772,54 @@ Before you finish, verify your solution and fix any issues."
 - Review strategy before execution
 - Approve or modify approach
 - Perfect for complex changes
+- **Actually uses the Plan subagent** behind the scenes
+
+</v-clicks>
+
+---
+
+# Subagents: Specialized Task Handlers
+
+<v-clicks>
+
+- **Autonomous agents** that Claude launches for specialized tasks
+- **Dynamic selection** (v2.0.28+): Claude chooses appropriate subagent automatically
+- **Model selection**: Different subagents can use different models for optimal performance
+- **Common subagent types**:
+  - **Plan**: Strategic task decomposition and planning
+  - **Explore**: Fast codebase exploration and search
+  - **Testing**: Test generation and quality assurance
+  - **Documentation**: Technical writing and content creation
+- **Transparent operation**: You see subagent activity in the output
+- **Efficiency**: Specialized agents work faster than general-purpose conversations
+
+</v-clicks>
+
+---
+
+# When Claude Uses Subagents
+
+<v-clicks>
+
+### Automatic Activation
+Claude launches subagents when tasks match specialized capabilities:
+
+```bash
+# Triggers Explore subagent
+"Find all API endpoints in this codebase"
+"How does authentication work across the project?"
+
+# Triggers Plan subagent (Plan Mode)
+Shift+Tab+Tab or "Create a plan for adding OAuth"
+
+# Triggers Testing subagent
+"Generate comprehensive test coverage for UserService"
+
+# Triggers Documentation subagent
+"Create API documentation for all REST endpoints"
+```
+
+**You don't manage this** - Claude handles subagent selection automatically for optimal results
 
 </v-clicks>
 
@@ -708,6 +972,43 @@ async for msg in query("Refactor this module",
 # .git/hooks/pre-commit
 claude -p "Check for security issues" --allowed-tools read,grep
 ```
+
+</v-clicks>
+
+---
+
+# VS Code Extension (Beta)
+
+<v-clicks>
+
+- **Native IDE integration** bringing Claude Code into your editor
+- **In-editor experience**: Work with Claude without leaving VS Code
+- **Context-aware**: Accesses your workspace files and settings
+- **All Claude Code features**: Skills, MCP, custom commands available
+- **Installation**: Search "Claude Code" in VS Code Extensions marketplace
+- **Beta status**: Actively developed, new features being added
+
+</v-clicks>
+
+---
+
+# VS Code Extension Features
+
+<v-clicks>
+
+### Integrated Workflow
+- Ask questions about code in sidebar
+- Reference files with `@` syntax directly in VS Code
+- Generate and edit code without context switching
+- View diffs and approve changes inline
+
+### Best Use Cases
+- Developers who prefer IDE-native workflows
+- Teams already standardized on VS Code
+- Projects with complex workspace configurations
+- Rapid iteration with immediate feedback
+
+**Note**: Terminal Claude Code remains the primary experience with fullest feature set
 
 </v-clicks>
 

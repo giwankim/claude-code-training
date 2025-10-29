@@ -294,8 +294,8 @@ Use the `exercises/java/shopping-service` (Grails/Groovy) project or any legacy 
 
 ## Lab 6: Advanced Workflows
 
-**Duration**: 20 minutes  
-**Goal**: Use advanced Claude Code features for complex tasks and real-world maintenance
+**Duration**: 45 minutes
+**Goal**: Master advanced Claude Code features including Plan Mode, Skills, Plugins, Output Styles, and Hooks
 
 ### Setup
 
@@ -303,7 +303,7 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
 
 ### Exercises
 
-#### Part A: Advanced Claude Code Features (10 minutes)
+#### Part A: Plan Mode and Subagents (5 minutes)
 
 1. **Plan Mode usage**:
    - Press `Shift+Tab+Tab` to activate Plan Mode
@@ -311,49 +311,177 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
    "Plan a comprehensive improvement to add error handling and logging to this Flask application"
    ```
    - Review the plan before execution
-   - Execute step by step
+   - Observe that Plan Mode uses the Plan subagent
+   - Execute step by step or approve the entire plan
 
-2. **CLAUDE.md creation**:
+2. **Understanding Subagents**:
+   ```
+   "Explain which subagents you use and when they activate automatically"
+   ```
+   - Learn about Explore, Plan, Testing, and Documentation subagents
+   - Understand how Claude selects the right agent for each task
+
+#### Part B: Skills and Plugins (15 minutes)
+
+3. **Explore Built-in Skills**:
+   ```
+   "Create a quarterly weather report as an Excel spreadsheet with charts showing temperature trends"
+   ```
+   - The xlsx skill will activate automatically
+   - Observe how skills load progressively
+
+4. **Install and Test a Custom Skill**:
+   ```bash
+   # Copy example skill to your local skills directory
+   cp -r ../../../skills-and-plugins/api-documentation-skill ~/.claude/skills/
+   ```
+
+   Then ask:
+   ```
+   "Generate comprehensive API documentation for the weather app's REST endpoints"
+   ```
+   - The API Documentation skill should activate
+   - Review the generated documentation format
+
+5. **Create Your Own Skill**:
+   ```
+   "Help me create a custom skill for Python Flask best practices that includes:
+   - Constructor injection patterns
+   - Error handling conventions
+   - Logging standards
+   - Testing requirements
+   Save it to ~/.claude/skills/flask-best-practices/"
+   ```
+
+6. **Explore Plugins** (Discussion):
+   - Review `skills-and-plugins/plugin-examples/team-standards-plugin.md`
+   - Discuss how plugins bundle commands, skills, hooks, and MCP servers
+   - Understand use cases for team-wide plugin distribution
+
+#### Part C: Output Styles (5 minutes)
+
+7. **Test Built-in Output Styles**:
+   ```bash
+   # Exit current session, start with explanatory style
+   claude --output-style explanatory
+   ```
+
+   Ask the same question twice with different styles:
+   ```
+   "Explain how the weather API integration works"
+   ```
+
+   Exit and try learning style:
+   ```bash
+   claude --output-style learning
+   ```
+   ```
+   "Explain how the weather API integration works"
+   ```
+   - Compare the verbosity and teaching approach
+
+8. **Create Custom Output Style**:
+   ```
+   "Help me create a custom output style called 'production' that:
+   - Is concise and action-focused
+   - Skips explanations unless asked
+   - Assumes expert-level knowledge
+   - Shows code without preambles
+   Save it to ~/.claude/output-styles/production.md"
+   ```
+
+#### Part D: Hooks and Automation (10 minutes)
+
+9. **Configure a SessionEnd Hook**:
+   ```bash
+   # Copy example hook
+   cp ../../../hooks-examples/session-end-summary.sh ~/.claude/hooks/
+   chmod +x ~/.claude/hooks/session-end-summary.sh
+   ```
+
+   Then configure it:
+   ```
+   "Add a sessionEnd hook to my ~/.claude/settings.json that runs ~/.claude/hooks/session-end-summary.sh"
+   ```
+
+10. **Test PreToolUse Hook** - Security Validator:
+   ```bash
+   # Copy security hook
+   cp ../../../hooks-examples/security-validator.sh ~/.claude/hooks/
+   chmod +x ~/.claude/hooks/security-validator.sh
+   ```
+
+   Configure it:
+   ```
+   "Add a preToolUse hook for Write operations that runs ~/.claude/hooks/security-validator.sh to check for hardcoded secrets"
+   ```
+
+   Test it:
+   ```
+   "Create a config file with: API_KEY = 'sk_live_1234567890abcdef'"
+   ```
+   - The hook should block this and explain why
+   - Try again with environment variable approach
+
+11. **Create Your Own Hook**:
+   ```
+   "Create a hook that runs prettier to auto-format Python files before any Edit operation. Save it to ~/.claude/hooks/format-python.sh"
+   ```
+
+#### Part E: CLAUDE.md and Custom Commands (5 minutes)
+
+12. **CLAUDE.md creation**:
    ```
    "Create a CLAUDE.md file for this weather app with Python coding standards, dependencies, and project context"
    ```
 
-   Note that the built-in slash command `/init` creates the `CLAUDE.md` file, but you can simply ask Claude to create it if you like.
+   Note that the built-in slash command `/init` creates the `CLAUDE.md` file, but you can simply ask Claude to create it.
 
-3. **Custom slash command**:
+13. **Custom slash command**:
    ```
-   "Help me create a custom slash command for updating Python dependencies safely"
-   ```
-
-#### Part B: Feature Enhancement (10 minutes)
-
-4. **Error handling enhancement**:
-   ```
-   "Add comprehensive error handling to this Flask application including proper status codes and user-friendly error pages"
+   "Help me create a custom slash command called 'update-deps' for updating Python dependencies safely with backup and testing"
    ```
 
-5. **Logging integration**:
+#### Part F: Feature Enhancement with All Tools (5 minutes)
+
+14. **Comprehensive Enhancement**:
+
+   Now use Plan Mode with all your new tools:
    ```
-   "Implement structured logging throughout the application with appropriate log levels"
+   "Using Plan Mode, add comprehensive error handling and structured logging to this application. The security hook should verify no secrets are added, and generate API documentation using the skill when done."
    ```
 
-6. **Configuration management**:
-   ```
-   "Improve the configuration system to support environment-specific settings"
-   ```
-
-7. **Testing validation**:
-   ```
-   "Create tests to verify the new error handling and logging functionality works correctly"
-   ```
+   - Observe how multiple advanced features work together
+   - Note subagent selection, skill activation, and hook execution
 
 ### Expected Outcomes
 
-- Master advanced Claude Code features
-- Create reusable project configurations
-- Learn systematic feature enhancement workflows
-- Practice comprehensive application improvement with AI assistance
-- Understand enterprise development practices
+After completing this lab, you will:
+- Master Plan Mode and understand subagent architecture
+- Know when and how to use Skills for domain expertise
+- Understand plugin system for team collaboration
+- Customize output styles for different contexts
+- Implement hooks for workflow automation
+- Create reusable project configurations with CLAUDE.md
+- Build custom slash commands for common workflows
+- Orchestrate multiple advanced features together
+
+### Troubleshooting
+
+**Skills not activating?**
+- Check that SKILL.md has proper YAML frontmatter
+- Verify skill directory is in `~/.claude/skills/`
+- Ask Claude if the skill loaded: `/skills list` (if available)
+
+**Hooks not running?**
+- Verify hook script has execute permissions: `chmod +x hook.sh`
+- Check settings.json syntax is valid JSON
+- Review hook output - errors appear as user messages
+
+**Output style not changing?**
+- Verify file is in `~/.claude/output-styles/`
+- Check YAML frontmatter format
+- Restart claude with `--output-style` flag
 
 [← Back to Table of Contents](#table-of-contents)
 
