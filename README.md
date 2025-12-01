@@ -23,6 +23,8 @@ This repository contains all the materials for the Claude Code Training course:
 - **`slides.md`**: The main Slidev presentation with interactive demos
 - **`lab_handout.md`**: Progressive hands-on labs from beginner to advanced
 - **`exercises.md`**: Instructor-led demos and exercises using real codebases
+- **`half-day-outline.md`**: Condensed outline for half-day training sessions
+- **`events/`**: Event-specific descriptions and course configurations
 - **`custom-commands.md`**: Showcase of powerful custom slash commands for workflow automation
 - **`commands/`**: Ready-to-use custom command files for students
 - **`skills-and-plugins/`**: Examples of custom skills and plugin configurations
