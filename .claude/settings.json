@@ -1,4 +1,9 @@
 {
+  "statusLine": {
+    "enabled": true,
+    "type": "command",
+    "command": "bash ~/.claude/statusline-command.sh"
+  },
   "hooks": {
     "Notification": [
       {

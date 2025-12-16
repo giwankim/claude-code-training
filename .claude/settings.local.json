@@ -53,9 +53,17 @@
       "Bash(git -C /Users/kennethkousen/Documents/OReilly/claude-code-training status)",
       "Bash(git -C /Users/kennethkousen/Documents/OReilly/claude-code-training status --untracked-files=all .claude/)",
       "Bash(cat:*)",
-      "Bash(bash:*)"
+      "Bash(bash:*)",
+      "Bash(claude:*)",
+      "Bash(git -C /Users/kennethkousen/Documents/OReilly/claude-code-training log --oneline -20 -- .claude/settings.local.json)",
+      "Bash(git -C /Users/kennethkousen/Documents/OReilly/claude-code-training log -p --follow -- .claude/settings.local.json)",
+      "Bash(git -C /Users/kennethkousen/Documents/OReilly/claude-code-training diff .claude/settings.json .claude/settings.local.json exercises/java/certificate-service/README.md)"
     ],
     "deny": []
   },
-  "disableAllHooks": true
+  "disableAllHooks": false,
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline-command.sh"
+  }
 }
