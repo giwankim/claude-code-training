@@ -6,7 +6,6 @@ dist
 .remote-assets
 components.d.ts
 /.idea/
-.claude/
 .vscode/
 
 # Backup files
