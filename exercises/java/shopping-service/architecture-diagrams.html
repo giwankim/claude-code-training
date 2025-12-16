@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Service Architecture</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4a90d9;
+            padding-bottom: 0.5rem;
+        }
+        h2 {
+            color: #4a90d9;
+            margin-top: 2rem;
+        }
+        .diagram-container {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0 2rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background: #4a90d9;
+            color: white;
+        }
+        tr:hover {
+            background: #f9f9f9;
+        }
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .tech-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .tech-item strong {
+            color: #4a90d9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Shopping Service Architecture</h1>
+
+    <p>This document provides architectural diagrams for the Shopping Service, a Grails 2.4.3 e-commerce application.</p>
+
+    <div class="tech-stack">
+        <div class="tech-item"><strong>Framework:</strong> Grails 2.4.3</div>
+        <div class="tech-item"><strong>Language:</strong> Groovy</div>
+        <div class="tech-item"><strong>Database:</strong> H2 (embedded)</div>
+        <div class="tech-item"><strong>ORM:</strong> Hibernate 4 + EhCache</div>
+    </div>
+
+    <h2>1. High-Level Architecture (Layered)</h2>
+    <div class="diagram-container">
+        <pre class="mermaid">
+flowchart TB
+    subgraph Clients["Clients"]
+        Browser["Web Browser"]
+        API["REST API Client"]
+    end
+
+    subgraph Presentation["Presentation Layer"]
+        GSP["GSP Views&lt;br/&gt;(HTML Templates)"]
+        JSON["JSON/XML&lt;br/&gt;Renderers"]
+    end
+
+    subgraph Controllers["Controller Layer"]
+        PC["ProductController"]
+        CC["CustomerController"]
+        OC["OrderController"]
+        OLC["OrderLineController"]
+    end
+
+    subgraph Domain["Domain Layer (GORM)"]
+        Product["Product"]
+        Customer["Customer"]
+        Order["Order"]
+        OrderLine["OrderLine"]
+    end
+
+    subgraph Persistence["Persistence Layer"]
+        Hibernate["Hibernate 4&lt;br/&gt;+ EhCache"]
+        H2["H2 Database"]
+    end
+
+    Browser --> GSP
+    API --> JSON
+    GSP --> Controllers
+    JSON --> Controllers
+    Controllers --> Domain
+    Domain --> Hibernate
+    Hibernate --> H2
+        </pre>
+    </div>
+
+    <h2>2. Domain Model (Entity Relationships)</h2>
+    <div class="diagram-container">
+        <pre class="mermaid">
+erDiagram
+    Customer ||--o{ Order : "has many"
+    Order ||--o{ OrderLine : "has many"
+    OrderLine }o--|| Product : "references"
+
+    Customer {
+        Long id PK
+        String name
+    }
+
+    Order {
+        Long id PK
+        String number UK
+        Date dateCreated
+        Date lastUpdated
+        Long customer_id FK
+    }
+
+    OrderLine {
+        Long id PK
+        Long order_id FK
+        Long product_id FK
+        int quantity
+    }
+
+    Product {
+        Long id PK
+        String name
+        BigDecimal price
+    }
+        </pre>
+    </div>
+
+    <h2>3. REST API Request Flow</h2>
+    <div class="diagram-container">
+        <pre class="mermaid">
+sequenceDiagram
+    participant C as Client
+    participant URL as UrlMappings
+    participant Ctrl as Controller
+    participant Dom as Domain/GORM
+    participant DB as H2 Database
+
+    C->>URL: GET /orders/1
+    URL->>Ctrl: OrderController.show(id=1)
+    Ctrl->>Dom: Order.get(1)
+    Dom->>DB: SELECT * FROM orders WHERE id=1
+    DB-->>Dom: Row data
+    Dom-->>Ctrl: Order instance
+
+    alt HTML Request
+        Ctrl-->>C: GSP View (show.gsp)
+    else JSON Request
+        Ctrl-->>C: JSON Response
+    end
+        </pre>
+    </div>
+
+    <h2>4. Component Interactions</h2>
+    <div class="diagram-container">
+        <pre class="mermaid">
+flowchart LR
+    subgraph "URL Endpoints"
+        E1["/products"]
+        E2["/customers"]
+        E3["/orders"]
+        E4["/customers/{id}/orders"]
+    end
+
+    subgraph "Controllers"
+        PC["ProductController"]
+        CC["CustomerController"]
+        OC["OrderController"]
+    end
+
+    subgraph "Domain Objects"
+        P["Product"]
+        C["Customer"]
+        O["Order"]
+        OL["OrderLine"]
+    end
+
+    E1 --> PC
+    E2 --> CC
+    E3 --> OC
+    E4 --> OC
+
+    PC --> P
+    CC --> C
+    CC --> O
+    OC --> O
+    OC --> OL
+    O --> OL
+    OL --> P
+    C --> O
+        </pre>
+    </div>
+
+    <h2>5. Order Price Calculation Flow</h2>
+    <div class="diagram-container">
+        <pre class="mermaid">
+flowchart TD
+    O["Order.getPrice()"]
+    OL1["OrderLine 1"]
+    OL2["OrderLine 2"]
+    OLn["OrderLine n"]
+
+    P1["Product 1&lt;br/&gt;price: $10"]
+    P2["Product 2&lt;br/&gt;price: $25"]
+    Pn["Product n&lt;br/&gt;price: $X"]
+
+    O --> |"orderLines*.price.sum()"| SUM["Total Price"]
+
+    OL1 --> |"qty x price"| OL1P["$20&lt;br/&gt;(2 x $10)"]
+    OL2 --> |"qty x price"| OL2P["$75&lt;br/&gt;(3 x $25)"]
+    OLn --> |"qty x price"| OLnP["..."]
+
+    OL1 -.-> P1
+    OL2 -.-> P2
+    OLn -.-> Pn
+
+    OL1P --> SUM
+    OL2P --> SUM
+    OLnP --> SUM
+        </pre>
+    </div>
+
+    <h2>Architecture Summary</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Layer</th>
+                <th>Components</th>
+                <th>Responsibility</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Presentation</strong></td>
+                <td>GSP, JSON/XML Renderers</td>
+                <td>UI rendering, content negotiation</td>
+            </tr>
+            <tr>
+                <td><strong>Controller</strong></td>
+                <td>4 controllers</td>
+                <td>Request handling, HTTP methods, transactions</td>
+            </tr>
+            <tr>
+                <td><strong>Domain</strong></td>
+                <td>4 GORM entities</td>
+                <td>Business logic, relationships, validation</td>
+            </tr>
+            <tr>
+                <td><strong>Persistence</strong></td>
+                <td>Hibernate + H2</td>
+                <td>ORM mapping, caching, database access</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+    </script>
+</body>
+</html>
