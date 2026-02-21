@@ -104,14 +104,14 @@ Kousen IT, Inc.
 
 - **Pro Plan** - $20/month
   - ~10-40 prompts per 5 hours
-  - Sonnet 4 only
+  - Sonnet 4.6 only
 - **Max Plan 5x** - $100/month
   - ~50-200 prompts per 5 hours
-  - Sonnet or Opus 4
+  - Sonnet 4.6 or Opus 4.6
 - **Max Plan 20x** - $200/month
   - ~200-800 prompts per 5 hours
-  - Sonnet or Opus 4
-- **Note**: Opus 4 uses 5x more credits than Sonnet 4
+  - Sonnet 4.6 or Opus 4.6
+- **Note**: Opus 4.6 uses 5x more credits than Sonnet 4.6
 - **Limits reset**: Every 5 hours
 
 </v-clicks>
@@ -126,10 +126,10 @@ Kousen IT, Inc.
 
 - Command-line AI tool for development
 - Context-aware codebase understanding
-- Autonomous and collaborative modes
-- Multi-language support
+- Autonomous, collaborative, and **multi-agent** modes
+- Multi-language support with **LSP code intelligence**
 - Integrated git operations
-- Test generation and documentation
+- **Extensible**: Skills, Plugins, MCP, Hooks
 
 </v-clicks>
 
@@ -139,8 +139,11 @@ Kousen IT, Inc.
 
 <v-clicks>
 
-- Install via npm: `npm install -g @anthropic-ai/claude-code`
-- Or download from GitHub releases
+- **Preferred**: Native binary installer:
+  ```bash
+  curl -fsSL https://storage.googleapis.com/anthropic-releases/claude-cli/install.sh | bash
+  ```
+- Legacy (deprecated): `npm install -g @anthropic-ai/claude-code`
 - Set API key: `export ANTHROPIC_API_KEY="your-key"`
 - Verify: `claude --version`
 
@@ -188,6 +191,8 @@ with Next, Previous, and Play buttons"
 - **Command Mode** (default) - Interactive conversation
 - **Auto-Accept Mode** (Shift+Tab) - Autonomous execution
 - **Plan Mode** (Shift+Tab+Tab) - Review plans before execution
+- **Model switch**: `Alt+P` / `Option+P` to change models mid-conversation
+- **Thinking toggle**: `Alt+T` to enable extended thinking
 
 </v-clicks>
 
@@ -355,8 +360,10 @@ backgroundSize: cover
 
 - **Project memory**: `./CLAUDE.md` (shared with team)
 - **User memory**: `~/.claude/CLAUDE.md` (personal preferences)
+- **Rules directory**: `.claude/rules/` for organized project rules
 - Auto-discovered up directory tree
 - **Quick add**: Start input with `#` to add memory
+- **Automatic memory**: Claude records and recalls across sessions
 - **Commands**: `/memory` to edit, `/init` to bootstrap
 - **Import files**: Use `@path/to/import` syntax
 
@@ -519,6 +526,60 @@ CLAUDE.md file as though the user invoked the init task.
 
 ---
 
+# New Hook Events (Since v2.1)
+
+<v-clicks>
+
+- **`Setup`**: Runs on repository initialization (install deps, configure tools)
+- **`ConfigChange`**: Enterprise security auditing when settings change
+- **`TeammateIdle`**: Fires when a team agent goes idle
+- **`TaskCompleted`**: Fires when a team task is marked complete
+- **`WorktreeCreate` / `WorktreeRemove`**: Custom VCS setup/teardown
+- **Agent-level hooks**: Skills and agents can define their own hooks in frontmatter
+
+</v-clicks>
+
+---
+
+# Customizable Keybindings
+
+<v-clicks>
+
+- **`/keybindings`** command to configure keyboard shortcuts
+- **Config file**: `~/.claude/keybindings.json`
+- Remap any action to preferred key combinations
+- **`chat:newline`** action for configurable multi-line input
+- **Argument shorthand**: `$0`, `$1` in custom commands (not just `$ARGUMENTS`)
+
+</v-clicks>
+
+```json
+{
+  "chat:submit": "enter",
+  "chat:newline": "shift+enter",
+  "chat:toggle_thinking": "alt+t",
+  "chat:switch_model": "alt+p"
+}
+```
+
+---
+
+# LSP: Code Intelligence
+
+<v-clicks>
+
+- **Language Server Protocol** integration for precise code navigation
+- **Go to definition**: Jump to where symbols are defined
+- **Find references**: Locate all usages across the codebase
+- **Hover info**: Get type information and documentation
+- **Call hierarchy**: Trace incoming and outgoing calls
+- **Workspace symbols**: Search for symbols across the project
+- Works with any configured LSP server (TypeScript, Java, Python, etc.)
+
+</v-clicks>
+
+---
+
 # Output Styles
 
 <v-clicks>
@@ -674,12 +735,13 @@ backgroundSize: cover
 <v-clicks>
 
 - **Modular capabilities** that extend Claude's functionality beyond the base model
+- **Unified with slash commands** (v2.1): Skills and commands merged into one system
 - **Three-tier loading system** for efficiency:
   - Metadata (always loaded): Name and description (~100 tokens)
   - Instructions (triggered): Main SKILL.md with procedures
   - Resources (on-demand): Scripts, templates, reference files
+- **Hot-reload**: Edit SKILL.md and changes take effect immediately
 - **Automatic activation** when contextually relevant
-- **Filesystem-based** knowledge that persists across conversations
 - **Progressive disclosure**: Load only what's needed for each task
 
 </v-clicks>
@@ -801,6 +863,7 @@ image: https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0
 
 - Trigger deeper analysis with "think" in your prompts
 - Use **"think more"**, **"think harder"**, **"ultrathink"** for deeper reasoning
+- Toggle thinking with **`Alt+T`** keyboard shortcut
 - Shows thinking process as *italic gray text*
 - Perfect for complex architectural decisions
 - **Verification pattern**: "Before you finish, verify your solution and fix any issues"
@@ -839,15 +902,15 @@ Before you finish, verify your solution and fix any issues."
 <v-clicks>
 
 - **Autonomous agents** that Claude launches for specialized tasks
-- **Dynamic selection** (v2.0.28+): Claude chooses appropriate subagent automatically
-- **Model selection**: Different subagents can use different models for optimal performance
+- **Dynamic selection**: Claude chooses appropriate subagent automatically
+- **Model selection**: Different subagents can use different models
 - **Common subagent types**:
   - **Plan**: Strategic task decomposition and planning
   - **Explore**: Fast codebase exploration and search
   - **Testing**: Test generation and quality assurance
-  - **Documentation**: Technical writing and content creation
-- **Transparent operation**: You see subagent activity in the output
-- **Efficiency**: Specialized agents work faster than general-purpose conversations
+  - **General-purpose**: Full read/write access for complex work
+- **Background execution**: Subagents can run in background (`Ctrl+B`)
+- **Worktree isolation**: Subagents can work in isolated git worktrees
 
 </v-clicks>
 
@@ -881,6 +944,85 @@ Shift+Tab+Tab or "Create a plan for adding OAuth"
 
 ---
 
+# Agent Teams (Research Preview)
+
+<v-clicks>
+
+- **Multi-agent orchestration**: A lead agent coordinates multiple teammates
+- **Shared task list**: Tasks with dependencies, ownership, and status tracking
+- **Independent context**: Each teammate gets its own context window
+- **Inter-agent messaging**: Direct messages, broadcasts, and shutdown coordination
+- **Automatic work distribution**: Teammates self-claim tasks as they finish
+
+</v-clicks>
+
+```bash
+# Enable teams (research preview)
+export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
+
+# Example prompt
+"Create a team to refactor the auth module: one agent updates
+the service layer, another updates tests, a third updates docs"
+```
+
+---
+
+# How Agent Teams Work
+
+<v-clicks>
+
+- **Lead agent** creates team, breaks work into tasks, assigns teammates
+- **Teammates** work independently, report back, claim new tasks
+- **Task coordination**: `blocks`/`blockedBy` dependencies prevent conflicts
+- **Idle state is normal**: Teammates go idle between turns, wake on message
+- **Hook events**: `TeammateIdle`, `TaskCompleted` for automation
+- **Best for**: Large refactors, multi-file features, parallel code + test work
+
+</v-clicks>
+
+```
+Lead Agent ──→ creates tasks ──→ assigns teammates
+     ↑                              │
+     └── receives results ←─────────┘
+         (via shared task list + messages)
+```
+
+---
+
+# Background Agents & Worktree Isolation
+
+<v-clicks>
+
+- **Background agents**: Run tasks while you keep working
+  - `Ctrl+B` to background a running agent
+  - `Ctrl+F` to kill background agents (two-press confirmation)
+- **Worktree isolation**: Agents work in temporary git worktrees
+  - `claude -w` or `claude --worktree` starts in isolated worktree
+  - Subagents support `isolation: "worktree"` for safe parallel work
+  - Changes are on a separate branch — merge when ready
+- **Combined power**: Background + worktree = fearless parallel development
+
+</v-clicks>
+
+---
+
+# Cloud Handoff & Session Management
+
+<v-clicks>
+
+- **Cloud handoff** (`&` prefix): Send a task to run on the web
+  - Type `& refactor the auth module` to hand off to cloud
+  - Continue working locally while cloud processes
+- **Named sessions**: `/rename my-feature` for easy identification
+- **PR-linked sessions**: `claude --from-pr 123` resumes PR context
+- **Automatic memory**: Claude records and recalls across sessions
+- **Session forking**: `/fork` to branch a conversation
+- **Resume picker**: `claude --resume` shows up to 50 recent sessions
+
+</v-clicks>
+
+---
+
 # Model Context Protocol (MCP)
 
 <v-clicks>
@@ -889,6 +1031,9 @@ Shift+Tab+Tab or "Create a plan for adding OAuth"
 - Tool integration (APIs, databases, services)
 - Context enhancement for better AI responses
 - Security controls and permissions
+- **MCP Tool Search** (default since v2.1): Lazy-loads tools on demand
+  - Reduces context usage by ~95% with many MCP tools
+  - Tools discovered automatically when needed
 
 </v-clicks>
 
@@ -918,6 +1063,8 @@ claude mcp add context7 -- npx -y @upstash/context7-mcp
 # Management commands
 claude mcp list
 claude mcp remove <server-name>
+/mcp enable <server-name>    # Quick toggle in session
+/mcp disable <server-name>
 ```
 
 ### Config Locations
@@ -1256,21 +1403,23 @@ backgroundSize: cover
 
 <v-clicks>
 
-- Check out multiple branches into separate directories
-- Run Claude Code sessions independently on each branch
+- **Built-in worktree support**: `claude -w` or `claude --worktree`
+  - Automatically creates isolated worktree + new branch
+  - Prompts to keep or remove on session exit
+- **Manual worktrees** also work for full control
 - Share git history while isolating working files
 - Perfect for multi-feature development
 
 </v-clicks>
 
 ```bash
-# Create worktrees for parallel work
-git worktree add ../project-feature-a -b feature-a
-git worktree add ../project-bugfix bugfix-123
+# Built-in (preferred) — automatic isolation
+claude -w                     # Start in new worktree
+claude --worktree             # Same thing
 
-# Run Claude Code in each directory
+# Manual worktrees for full control
+git worktree add ../project-feature-a -b feature-a
 cd ../project-feature-a && claude
-cd ../project-bugfix && claude
 
 # Manage worktrees
 git worktree list
@@ -1323,7 +1472,7 @@ claude /doctor  # Diagnose installation issues
 
 ### Global Configuration
 ```bash
-claude config set -g model claude-sonnet-4
+claude config set -g model claude-sonnet-4-6
 claude config set -g verbose true
 claude config set -g max_conversation_turns 10
 ```
@@ -1378,7 +1527,10 @@ claude --allowed-tools read,write,edit,task
 </v-clicks>
 
 ```bash
-# Reinstall globally
+# Preferred: Native binary installer
+curl -fsSL https://storage.googleapis.com/anthropic-releases/claude-cli/install.sh | bash
+
+# Legacy npm (deprecated but still works)
 npm uninstall -g @anthropic/claude-code
 npm install -g @anthropic/claude-code
 ```

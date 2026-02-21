@@ -294,8 +294,8 @@ Use the `exercises/java/shopping-service` (Grails/Groovy) project or any legacy 
 
 ## Lab 6: Advanced Workflows
 
-**Duration**: 50 minutes
-**Goal**: Master advanced Claude Code features including Plan Mode, Skills, Plugins, Output Styles, Hooks, and MCP
+**Duration**: 60 minutes
+**Goal**: Master advanced Claude Code features including Plan Mode, Skills, Plugins, Output Styles, Hooks, MCP, and Agent Teams
 
 ### Setup
 
@@ -318,10 +318,13 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
    ```
    "Explain which subagents you use and when they activate automatically"
    ```
-   - Learn about Explore, Plan, Testing, and Documentation subagents
+   - Learn about Explore, Plan, Testing, and General-purpose subagents
    - Understand how Claude selects the right agent for each task
+   - **Keyboard shortcuts**: `Alt+T` toggles thinking, `Alt+P` switches models mid-conversation
 
 #### Part B: Skills and Plugins (15 minutes)
+
+> **Note**: Since v2.1, Skills and slash commands are a unified system. Skills now support hot-reload — edit a SKILL.md and changes take effect immediately without restarting.
 
 3. **Explore Built-in Skills**:
    ```
@@ -432,6 +435,8 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
 
 #### Part E: MCP Server Integration (5 minutes)
 
+> **Note**: MCP Tool Search (lazy loading) is now enabled by default. Instead of loading all tool definitions upfront, Claude discovers tools on demand — reducing context usage by ~95% with many MCP tools.
+
 12. **List and Explore MCP Servers**:
    ```bash
    # List currently configured MCP servers
@@ -493,6 +498,58 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
    - Observe how multiple advanced features work together
    - Note subagent selection, skill activation, and hook execution
 
+#### Part H: Agent Teams (10 minutes)
+
+> **Note**: Agent Teams is a research preview feature. Enable it with:
+> ```bash
+> export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
+> ```
+
+19. **Launch an Agent Team**:
+
+   Navigate to the `exercises/java/certificate-service` directory:
+   ```
+   "Create a team of agents to improve this project. One agent should review
+   the test suite and identify coverage gaps, another should review the code
+   for security issues, and a third should update the documentation.
+   Coordinate the work and give me a summary when done."
+   ```
+
+   Observe:
+   - The lead agent creates a task list and assigns teammates
+   - Each teammate works independently in its own context
+   - Teammates report back as they complete tasks
+   - The lead agent synthesizes results
+
+20. **Monitor Team Progress**:
+
+   While the team works, observe:
+   - Task status updates in the output
+   - Inter-agent messages (DMs between teammates)
+   - How idle teammates wake up when assigned new work
+   - The shared task list with dependencies
+
+21. **Simpler Team Exercise** (alternative if time is short):
+   ```
+   "Create a team with two agents: one to add input validation to the
+   certificate controller, and another to write tests for that validation.
+   The test agent should wait until the validation agent finishes."
+   ```
+
+   This demonstrates task dependencies (`blocks`/`blockedBy`).
+
+22. **Background Agents and Worktree Isolation**:
+   ```bash
+   # Start Claude in an isolated worktree
+   claude -w
+   ```
+   ```
+   "Refactor the PdfService to use the builder pattern, then run all tests"
+   ```
+   - Notice you're on a separate branch in an isolated directory
+   - Changes don't affect your main working tree
+   - On exit, you'll be asked to keep or remove the worktree
+
 ### Expected Outcomes
 
 After completing this lab, you will:
@@ -505,6 +562,9 @@ After completing this lab, you will:
 - Create reusable project configurations with CLAUDE.md
 - Build custom slash commands for common workflows
 - Orchestrate multiple advanced features together
+- **Launch and coordinate Agent Teams for parallel work**
+- **Use worktree isolation for safe experimentation**
+- **Run background agents for concurrent workflows**
 
 ### Troubleshooting
 
@@ -528,6 +588,18 @@ After completing this lab, you will:
 - Check that remote servers are accessible (network/firewall)
 - For local servers, verify the command exists and is executable
 - Restart Claude Code after adding new MCP servers
+- Note: MCP Tool Search (lazy loading) means tools aren't visible until used
+
+**Agent Teams not starting?**
+- Verify the environment variable: `echo $CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`
+- Must be set to `1` before starting Claude Code
+- Teams require sufficient plan credits (each teammate uses tokens independently)
+- If teammates seem stuck, the lead agent will typically retry or reassign
+
+**Worktree issues?**
+- Must be in a git repository to use `claude -w`
+- Worktree is created under `.claude/worktrees/` in the repo
+- If a worktree wasn't cleaned up, use `git worktree list` and `git worktree remove`
 
 [← Back to Table of Contents](#table-of-contents)
 
