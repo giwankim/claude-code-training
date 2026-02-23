@@ -30,7 +30,10 @@ This document contains hands-on exercises for learning to use Claude Code for pr
 2. Initialize git: `git init`
 3. Start Claude Code: `claude`
 4. Create your first branch: `git checkout -b basic-lyrics-app`
-5. Find song lyrics: Google any song title + "lyrics" and copy the lyrics to a text file called `lyrics.txt`
+5. Find song lyrics: Google any song title + "lyrics" and copy the lyrics to a text file called `lyrics.txt`. Or use the sample provided in the repo root:
+   ```bash
+   cp ../wichita_lineman_lyrics.txt lyrics.txt
+   ```
 
 ### Exercises
 
