@@ -36,32 +36,32 @@ This document contains hands-on exercises for learning to use Claude Code for pr
 
 1. **Project foundation**:
    ```
-   "I have song lyrics saved in lyrics.txt. Create a web application that displays these lyrics one line at a time with three buttons: Next, Previous, and Play. The Play button should automatically advance through lines with a 2-second delay."
+   I have song lyrics saved in lyrics.txt. Create a web application that displays these lyrics one line at a time with three buttons: Next, Previous, and Play. The Play button should automatically advance through lines with a 2-second delay.
    ```
 
 2. **Enhanced functionality**:
    ```
-   "Add line numbering, show progress (e.g., 'Line 5 of 32'), and make the Play button toggle to Pause when active. Style it to look modern and clean."
+   Add line numbering, show progress (e.g., 'Line 5 of 32'), and make the Play button toggle to Pause when active. Style it to look modern and clean.
    ```
 
 3. **Visual improvements**:
    ```
-   "Add smooth transitions between lines, better typography, and responsive design. Make it visually appealing with a music-themed color scheme."
+   Add smooth transitions between lines, better typography, and responsive design. Make it visually appealing with a music-themed color scheme.
    ```
 
 4. **Advanced features**:
    ```
-   "Add keyboard shortcuts: spacebar for play/pause, arrow keys for next/previous. Also add a progress bar showing position in the song."
+   Add keyboard shortcuts: spacebar for play/pause, arrow keys for next/previous. Also add a progress bar showing position in the song.
    ```
 
 5. **Documentation and structure**:
    ```
-   "Create a README.md explaining the project, and organize the code into separate CSS and JavaScript files for better maintainability."
+   Create a README.md explaining the project, and organize the code into separate CSS and JavaScript files for better maintainability.
    ```
 
 6. **Version control and experimentation**:
    ```
-   "Help me commit this work, then create a new branch called 'speed-control' and add a slider to control the playback speed."
+   Help me commit this work, then create a new branch called 'speed-control' and add a slider to control the playback speed.
    ```
 
 ### Expected Outcomes
@@ -91,17 +91,17 @@ This document contains hands-on exercises for learning to use Claude Code for pr
 
 1. **Basic interaction**: Ask Claude Code to explain what it can do
    ```
-   "What are your main capabilities for helping with development?"
+   What are your main capabilities for helping with development?
    ```
 
 2. **Project overview**: Get a high-level understanding
    ```
-   "Give me an overview of this project structure"
+   Give me an overview of this project structure
    ```
 
 3. **File exploration**: Find specific files
    ```
-   "Show me the main application files in this project"
+   Show me the main application files in this project
    ```
 
 ### Expected Outcomes
@@ -129,27 +129,27 @@ Choose one of the provided exercise projects:
 
 1. **Architecture analysis**: 
    ```
-   "Analyze the architecture of this application and explain the main components"
+   Analyze the architecture of this application and explain the main components
    ```
 
 2. **Technology stack identification**:
    ```
-   "What frameworks and libraries does this project use?"
+   What frameworks and libraries does this project use?
    ```
 
 3. **Entry point discovery**:
    ```
-   "Show me the main entry points and how the application starts"
+   Show me the main entry points and how the application starts
    ```
 
 4. **Configuration analysis**:
    ```
-   "Explain the configuration files and their purposes"
+   Explain the configuration files and their purposes
    ```
 
 5. **Dependency mapping**:
    ```
-   "Trace the flow from the main controller to the service layer"
+   Trace the flow from the main controller to the service layer
    ```
 
 ### Expected Outcomes
@@ -173,27 +173,27 @@ Use the same project from Lab 2, focusing on service classes or core business lo
 
 1. **Unit test generation**:
    ```
-   "Create unit tests for the [ServiceName] class with comprehensive coverage"
+   Create unit tests for the [ServiceName] class with comprehensive coverage
    ```
 
 2. **Edge case identification**:
    ```
-   "What edge cases should I test for the [methodName] method? Generate tests for them"
+   What edge cases should I test for the [methodName] method? Generate tests for them
    ```
 
 3. **Integration test creation**:
    ```
-   "Create integration tests for the [ControllerName] that test the full request/response cycle"
+   Create integration tests for the [ControllerName] that test the full request/response cycle
    ```
 
 4. **Mock setup**:
    ```
-   "Generate tests with proper mocking for external dependencies"
+   Generate tests with proper mocking for external dependencies
    ```
 
 5. **Test data generation**:
    ```
-   "Create realistic test data and fixtures for these test cases"
+   Create realistic test data and fixtures for these test cases
    ```
 
 ### Expected Outcomes
@@ -217,27 +217,27 @@ Continue with your chosen project, focusing on undocumented areas.
 
 1. **README generation**:
    ```
-   "Create a comprehensive README file for this project including setup, usage, and examples"
+   Create a comprehensive README file for this project including setup, usage, and examples
    ```
 
 2. **API documentation**:
    ```
-   "Generate API documentation for all the REST endpoints in this application"
+   Generate API documentation for all the REST endpoints in this application
    ```
 
 3. **Code comments**:
    ```
-   "Add meaningful JavaDoc/docstring comments to the main service classes"
+   Add meaningful JavaDoc/docstring comments to the main service classes
    ```
 
 4. **Architecture documentation**:
    ```
-   "Create an architectural overview document explaining the system design"
+   Create an architectural overview document explaining the system design
    ```
 
 5. **Troubleshooting guide**:
    ```
-   "Generate a troubleshooting guide for common issues with this application"
+   Generate a troubleshooting guide for common issues with this application
    ```
 
 ### Expected Outcomes
@@ -261,27 +261,27 @@ Use the `exercises/java/shopping-service` (Grails/Groovy) project or any legacy 
 
 1. **Code modernization**:
    ```
-   "Refactor this class to use modern Java features like records, switch expressions, and optional"
+   Refactor this class to use modern Java features like records, switch expressions, and optional
    ```
 
 2. **Spring Boot updates**:
    ```
-   "Update this Spring configuration to use modern Spring Boot patterns and annotations"
+   Update this Spring configuration to use modern Spring Boot patterns and annotations
    ```
 
 3. **Exception handling improvement**:
    ```
-   "Improve the error handling in this service class with proper exception types and messages"
+   Improve the error handling in this service class with proper exception types and messages
    ```
 
 4. **Performance optimization**:
    ```
-   "Review this code for performance issues and suggest optimizations"
+   Review this code for performance issues and suggest optimizations
    ```
 
 5. **Security review**:
    ```
-   "Review this controller for security vulnerabilities and suggest fixes"
+   Review this controller for security vulnerabilities and suggest fixes
    ```
 
 ### Expected Outcomes
@@ -308,7 +308,7 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
 1. **Plan Mode usage**:
    - Press `Shift+Tab+Tab` to activate Plan Mode
    ```
-   "Plan a comprehensive improvement to add error handling and logging to this Flask application"
+   Plan a comprehensive improvement to add error handling and logging to this Flask application
    ```
    - Review the plan before execution
    - Observe that Plan Mode uses the Plan subagent
@@ -316,7 +316,7 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
 
 2. **Understanding Subagents**:
    ```
-   "Explain which subagents you use and when they activate automatically"
+   Explain which subagents you use and when they activate automatically
    ```
    - Learn about Explore, Plan, Testing, and General-purpose subagents
    - Understand how Claude selects the right agent for each task
@@ -328,7 +328,7 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
 
 3. **Explore Built-in Skills**:
    ```
-   "Create a quarterly weather report as an Excel spreadsheet with charts showing temperature trends"
+   Create a quarterly weather report as an Excel spreadsheet with charts showing temperature trends
    ```
    - The xlsx skill will activate automatically
    - Observe how skills load progressively
@@ -342,19 +342,19 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
 
    Then ask:
    ```
-   "Generate comprehensive API documentation for the weather app's REST endpoints"
+   Generate comprehensive API documentation for the weather app's REST endpoints
    ```
    - The API Documentation skill should activate
    - Review the generated documentation format
 
 5. **Create Your Own Skill**:
    ```
-   "Help me create a custom skill for Python Flask best practices that includes:
+   Help me create a custom skill for Python Flask best practices that includes:
    - Constructor injection patterns
    - Error handling conventions
    - Logging standards
    - Testing requirements
-   Save it to ~/.claude/skills/flask-best-practices/"
+   Save it to ~/.claude/skills/flask-best-practices/
    ```
 
 6. **Explore Plugins** (Discussion):
@@ -372,7 +372,7 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
 
    Ask the same question twice with different styles:
    ```
-   "Explain how the weather API integration works"
+   Explain how the weather API integration works
    ```
 
    Exit and try learning style:
@@ -380,18 +380,18 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
    claude --output-style learning
    ```
    ```
-   "Explain how the weather API integration works"
+   Explain how the weather API integration works
    ```
    - Compare the verbosity and teaching approach
 
 8. **Create Custom Output Style**:
    ```
-   "Help me create a custom output style called 'production' that:
+   Help me create a custom output style called 'production' that:
    - Is concise and action-focused
    - Skips explanations unless asked
    - Assumes expert-level knowledge
    - Shows code without preambles
-   Save it to ~/.claude/output-styles/production.md"
+   Save it to ~/.claude/output-styles/production.md
    ```
 
 #### Part D: Hooks and Automation (10 minutes)
@@ -406,7 +406,7 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
 
    Then configure it:
    ```
-   "Add a sessionEnd hook to my ~/.claude/settings.json that runs ~/.claude/hooks/session-end-summary.sh"
+   Add a sessionEnd hook to my ~/.claude/settings.json that runs ~/.claude/hooks/session-end-summary.sh
    ```
 
 10. **Test PreToolUse Hook** - Security Validator:
@@ -418,19 +418,19 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
 
    Configure it:
    ```
-   "Add a preToolUse hook for Write operations that runs ~/.claude/hooks/security-validator.sh to check for hardcoded secrets"
+   Add a preToolUse hook for Write operations that runs ~/.claude/hooks/security-validator.sh to check for hardcoded secrets
    ```
 
    Test it:
    ```
-   "Create a config file with: API_KEY = 'sk_live_1234567890abcdef'"
+   Create a config file with: API_KEY = 'sk_live_1234567890abcdef'
    ```
    - The hook should block this and explain why
    - Try again with environment variable approach
 
 11. **Create Your Own Hook**:
    ```
-   "Create a hook that runs prettier to auto-format Python files before any Edit operation. Save it to ~/.claude/hooks/format-python.sh"
+   Create a hook that runs prettier to auto-format Python files before any Edit operation. Save it to ~/.claude/hooks/format-python.sh
    ```
 
 #### Part E: MCP Server Integration (5 minutes)
@@ -445,7 +445,7 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
 
    Then in Claude Code:
    ```
-   "What MCP servers are available and what tools do they provide?"
+   What MCP servers are available and what tools do they provide?
    ```
 
 13. **Add Context7 MCP Server** (for up-to-date documentation):
@@ -456,7 +456,7 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
 
    Test it:
    ```
-   "Using Context7, look up the latest Flask documentation for error handling"
+   Using Context7, look up the latest Flask documentation for error handling
    ```
 
 14. **Import from Claude Desktop** (if you have Claude Desktop installed):
@@ -467,7 +467,7 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
 
 15. **Explore MCP Tools**:
    ```
-   "Show me what tools are available from the MCP servers and demonstrate one"
+   Show me what tools are available from the MCP servers and demonstrate one
    ```
    - Observe how MCP extends Claude's capabilities
    - Note the `mcp__` prefix on tool names
@@ -476,14 +476,14 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
 
 16. **CLAUDE.md creation**:
    ```
-   "Create a CLAUDE.md file for this weather app with Python coding standards, dependencies, and project context"
+   Create a CLAUDE.md file for this weather app with Python coding standards, dependencies, and project context
    ```
 
    Note that the built-in slash command `/init` creates the `CLAUDE.md` file, but you can simply ask Claude to create it.
 
 17. **Custom slash command**:
    ```
-   "Help me create a custom slash command called 'update-deps' for updating Python dependencies safely with backup and testing"
+   Help me create a custom slash command called 'update-deps' for updating Python dependencies safely with backup and testing
    ```
 
 #### Part G: Feature Enhancement with All Tools (5 minutes)
@@ -492,7 +492,7 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
 
    Now use Plan Mode with all your new tools:
    ```
-   "Using Plan Mode, add comprehensive error handling and structured logging to this application. The security hook should verify no secrets are added, and generate API documentation using the skill when done."
+   Using Plan Mode, add comprehensive error handling and structured logging to this application. The security hook should verify no secrets are added, and generate API documentation using the skill when done.
    ```
 
    - Observe how multiple advanced features work together
@@ -509,10 +509,10 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
 
    Navigate to the `exercises/java/certificate-service` directory:
    ```
-   "Create a team of agents to improve this project. One agent should review
+   Create a team of agents to improve this project. One agent should review
    the test suite and identify coverage gaps, another should review the code
    for security issues, and a third should update the documentation.
-   Coordinate the work and give me a summary when done."
+   Coordinate the work and give me a summary when done.
    ```
 
    Observe:
@@ -531,9 +531,9 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
 
 21. **Simpler Team Exercise** (alternative if time is short):
    ```
-   "Create a team with two agents: one to add input validation to the
+   Create a team with two agents: one to add input validation to the
    certificate controller, and another to write tests for that validation.
-   The test agent should wait until the validation agent finishes."
+   The test agent should wait until the validation agent finishes.
    ```
 
    This demonstrates task dependencies (`blocks`/`blockedBy`).
@@ -544,7 +544,7 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
    claude -w
    ```
    ```
-   "Refactor the PdfService to use the builder pattern, then run all tests"
+   Refactor the PdfService to use the builder pattern, then run all tests
    ```
    - Notice you're on a separate branch in an isolated directory
    - Changes don't affect your main working tree
