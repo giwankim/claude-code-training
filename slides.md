@@ -149,7 +149,7 @@ backgroundSize: cover
 - **Desktop App** — Native Mac/Windows with visual diffs, scheduling, connectors
 - **Web (claude.ai/code)** — Browser-based, no local setup required
 
-All surfaces share: settings, CLAUDE.md, MCP servers, skills, and hooks
+Local surfaces share: settings, CLAUDE.md, MCP servers, skills, and hooks. Web sessions only inherit repo-committed config — not user-level `~/.claude` settings.
 
 </v-clicks>
 
@@ -179,6 +179,7 @@ All surfaces share: settings, CLAUDE.md, MCP servers, skills, and hooks
 - **`--remote` flag**: Start a web session from CLI: `claude --remote "Fix the auth bug"`
 - **Diff view**: Review changes file-by-file before creating PRs
 - **Auto-fix PRs**: Claude responds to CI failures and review comments automatically
+  - **Caveat**: Replies post under your account — may trigger automation (Atlantis, Actions)
 - **`/teleport`**: Pull web sessions back to your local terminal
 - **Setup**: Connect GitHub, install Claude GitHub App, select environment
 - Also accessible from **Claude iOS and Android apps**
@@ -283,7 +284,7 @@ with Next, Previous, and Play buttons"
 
 - **Command Mode** (default) - Interactive conversation
 - **Auto-Accept Mode** (Shift+Tab) - Autonomous execution
-- **Plan Mode** (Shift+Tab+Tab or `/plan`) - Review plans before execution
+- **Plan Mode** (`/plan` or cycle with `Shift+Tab`) - Review plans before execution
 - **Auto Mode** - Safety classifier eliminates permission prompts (opt-in)
 - **Effort levels**: `/effort low|medium|high` to control reasoning depth
 - **Model switch**: `Alt+P` / `Option+P` to change models mid-conversation
@@ -570,9 +571,11 @@ CLAUDE.md file as though the user invoked the init task.
 ```json
 {
   "hooks": {
-    "preToolUse": {
-      "Edit": "validate-edit.sh"
-    }
+    "PreToolUse": [{
+      "type": "command",
+      "command": "validate-edit.sh",
+      "if": "Edit(**)"
+    }]
   }
 }
 ```
@@ -592,9 +595,11 @@ CLAUDE.md file as though the user invoked the init task.
 ```json
 {
   "hooks": {
-    "preToolUse": {
-      "Write": "prettier --write $FILE"
-    }
+    "PreToolUse": [{
+      "type": "command",
+      "command": "prettier --write $FILE",
+      "if": "Write(**)"
+    }]
   }
 }
 ```
@@ -614,7 +619,10 @@ CLAUDE.md file as though the user invoked the init task.
 ```json
 {
   "hooks": {
-    "sessionEnd": "generate-session-report.sh"
+    "SessionEnd": [{
+      "type": "command",
+      "command": "generate-session-report.sh"
+    }]
   }
 }
 ```
@@ -993,7 +1001,7 @@ Before you finish, verify your solution and fix any issues."
 
 <v-clicks>
 
-- Press `Shift+Tab+Tab` or type **`/plan`** to activate
+- Type **`/plan`** or cycle with `Shift+Tab` to activate
 - Claude presents implementation plan before writing code
 - Review strategy, approve, or modify approach
 - Perfect for complex, multi-file changes
@@ -1032,17 +1040,15 @@ Before you finish, verify your solution and fix any issues."
 Claude launches subagents when tasks match specialized capabilities:
 
 ```bash
-# Triggers Explore subagent
+# Triggers Explore subagent (read-only, fast search)
 "Find all API endpoints in this codebase"
 "How does authentication work across the project?"
 
-# Triggers Plan subagent (Plan Mode)
-/plan or Shift+Tab+Tab or "Create a plan for adding OAuth"
+# Triggers Plan subagent
+/plan or "Create a plan for adding OAuth"
 
-# Triggers Testing subagent
+# Triggers General-purpose subagent (full read/write)
 "Generate comprehensive test coverage for UserService"
-
-# Triggers Documentation subagent
 "Create API documentation for all REST endpoints"
 ```
 
@@ -1165,7 +1171,7 @@ Lead Agent ──→ creates tasks ──→ assigns teammates
 
 ---
 
-# Scheduled Tasks
+# Scheduled Tasks: Three Tiers
 
 <v-clicks>
 
@@ -1173,20 +1179,24 @@ Lead Agent ──→ creates tasks ──→ assigns teammates
 |---|---|---|---|
 | **Runs on** | Your machine | Your machine | Anthropic cloud |
 | **Requires open session** | Yes | No | No |
-| **Requires machine on** | Yes | Yes | No |
 | **Persistent** | No | Yes | Yes |
 | **Local file access** | Yes | Yes | No |
 | **Min interval** | 1 minute | 1 minute | 1 hour |
 
 </v-clicks>
 
-```bash
-# Session-scoped polling
-/loop 5m check if the deployment finished
+---
 
-# Cloud scheduling (from CLI)
-/schedule
-```
+# Using Scheduled Tasks
+
+<v-clicks>
+
+- **`/loop`** — Session-scoped polling: `/loop 5m check if the deployment finished`
+- **Desktop** — Persistent local tasks that survive restarts
+- **Cloud** — Always-on via `/schedule` — runs even with your machine off
+- Cloud tasks clone the repo fresh each run (default branch)
+
+</v-clicks>
 
 ---
 
@@ -1764,7 +1774,7 @@ curl -fsSL https://storage.googleapis.com/anthropic-releases/claude-cli/install.
 
 ---
 
-# New & Notable Commands
+# New Commands: Workflow
 
 <v-clicks>
 
@@ -1773,14 +1783,25 @@ curl -fsSL https://storage.googleapis.com/anthropic-releases/claude-cli/install.
 | `/effort low\|medium\|high` | Set reasoning depth |
 | `/plan` | Enter Plan Mode from prompt |
 | `/ultraplan` | Cloud-based planning session |
+| `/batch` | Parallel changes across codebase |
+| `/loop 5m prompt` | Recurring prompt execution |
+| `/memory` | View and manage auto-memory |
+
+</v-clicks>
+
+---
+
+# New Commands: Utilities
+
+<v-clicks>
+
+| Command | Description |
+|---------|-------------|
 | `/branch` | Branch the conversation (was `/fork`) |
 | `/copy N` | Copy Nth-latest response to clipboard |
 | `/context` | Get context optimization suggestions |
 | `/color` | Set prompt-bar color for session |
 | `/powerup` | Interactive feature lessons |
-| `/loop 5m prompt` | Recurring prompt execution |
-| `/batch` | Parallel changes across codebase |
-| `/memory` | View and manage auto-memory |
 
 **Removed**: `/tag`, `/vim` (use `/config`). **Deprecated**: `/output-style` (use `/config`)
 

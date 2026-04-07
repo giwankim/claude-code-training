@@ -417,11 +417,11 @@ Subagents are autonomous specialized agents that Claude launches automatically f
 
 *   **Demo: Exploring Subagent Types**
     *   **Prompt:** `Explain which subagents you use and when each activates automatically`
-    *   **Review:** Plan, Explore, Testing, Documentation subagents
+    *   **Review:** The three built-in types: Plan, Explore, and General-purpose
     *   **Key point:** You don't manually select these - Claude chooses optimally
 
 *   **Demo: Plan Subagent (Plan Mode)**
-    *   Type `/plan` or press `Shift+Tab+Tab` to activate Plan Mode
+    *   Type `/plan` to activate Plan Mode
     *   **Prompt:** `Plan a comprehensive refactoring to modernize this Flask app with blueprints, better error handling, and structured logging`
     *   **Observe:** Plan subagent creates detailed strategy
     *   **Point out:** This uses strategic decomposition, different from direct execution
@@ -430,18 +430,13 @@ Subagents are autonomous specialized agents that Claude launches automatically f
 *   **Demo: Explore Subagent**
     *   **Prompt:** `Find all API endpoints in this codebase and explain their authentication requirements`
     *   **Observe:** Explore subagent activates automatically
-    *   **Point out:** Faster than general-purpose exploration
+    *   **Point out:** Read-only, faster than general-purpose exploration
     *   **Show:** Systematic codebase search results
 
-*   **Demo: Testing Subagent**
+*   **Demo: General-purpose Subagent**
     *   **Prompt:** `Generate comprehensive test coverage for all API endpoints with edge cases and error scenarios`
-    *   **Observe:** Testing subagent generates structured test suite
-    *   **Point out:** Specialized knowledge of testing frameworks and patterns
-
-*   **Demo: Documentation Subagent**
-    *   **Prompt:** `Create complete API documentation for all endpoints with examples and error codes`
-    *   **Observe:** Documentation subagent produces professional docs
-    *   **Point out:** Different writing style than general responses
+    *   **Observe:** General-purpose subagent handles testing, documentation, and other complex tasks
+    *   **Point out:** Full read/write access — Claude delegates to this for tasks needing code changes
 
 *   **Demo: Model Selection for Subagents**
     *   Explain that different subagents can use different models
@@ -485,7 +480,7 @@ Demonstrate how Skills, Hooks, Output Styles, and Subagents work together seamle
     ```
 
 *   **Demo: Complete Feature Development**
-    *   Activate Plan Mode: `/plan` or `Shift+Tab+Tab`
+    *   Activate Plan Mode: `/plan` (or cycle with `Shift+Tab`)
     *   **Prompt:** `Plan and implement a new training transcript PDF generation feature with:
         - REST controller following our Spring Boot standards
         - Service layer with business logic
@@ -576,7 +571,7 @@ Demonstrate the multi-surface ecosystem and cloud planning.
 
 *   **Demo: Five Surfaces Overview**
     *   Show the 5 surfaces: CLI, VS Code, JetBrains, Desktop app, Web (claude.ai/code)
-    *   Emphasize: all share settings, CLAUDE.md, MCP servers, skills, hooks
+    *   Emphasize: local surfaces share settings, CLAUDE.md, MCP servers, skills, hooks. Note: web sessions only inherit repo-committed config, not user-level `~/.claude` settings.
     *   **Discussion:** When would you use each surface?
 
 *   **Demo: Remote Session**

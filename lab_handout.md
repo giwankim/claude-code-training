@@ -309,7 +309,7 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
 #### Part A: Plan Mode and Subagents (5 minutes)
 
 1. **Plan Mode usage**:
-   - Press `Shift+Tab+Tab` or type `/plan` to activate Plan Mode
+   - Type `/plan` to activate Plan Mode (or cycle with `Shift+Tab`)
    ```
    Plan a comprehensive improvement to add error handling and logging to this Flask application
    ```
@@ -410,7 +410,7 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
 
    Then configure it:
    ```
-   Add a sessionEnd hook to my ~/.claude/settings.json that runs ~/.claude/hooks/session-end-summary.sh
+   Add a SessionEnd hook to my ~/.claude/settings.json that runs ~/.claude/hooks/session-end-summary.sh using the current hook array format
    ```
 
 10. **Test PreToolUse Hook** - Security Validator:
@@ -422,7 +422,7 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
 
    Configure it:
    ```
-   Add a preToolUse hook for Write operations that runs ~/.claude/hooks/security-validator.sh to check for hardcoded secrets
+   Add a PreToolUse hook for Write operations that runs ~/.claude/hooks/security-validator.sh to check for hardcoded secrets. Use the current hook array format with an "if" matcher.
    ```
 
    Test it:
