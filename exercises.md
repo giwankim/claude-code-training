@@ -382,12 +382,28 @@ Hooks execute shell commands in response to Claude Code events, enabling sophist
     *   **Test it:** Make a change that breaks tests, attempt to commit
     *   **Observe:** Hook prevents broken code from being committed
 
+*   **Demo: Conditional Hook with `if` field**
+    *   Show a hook that only runs on Python files:
+    ```json
+    {
+      "hooks": {
+        "PreToolUse": [{
+          "type": "command",
+          "command": "python-lint.sh",
+          "if": "Edit(**.py)"
+        }]
+      }
+    }
+    ```
+    *   **Point out:** The `if` field uses permission rule syntax to filter when hooks fire
+
 *   **Discussion Points:**
     - Exit code 0 = allow, non-zero = block
+    - Four hook types: command, HTTP, prompt, agent
     - Hooks should be fast (they run synchronously)
     - Use hooks for: validation, formatting, security, backups
     - Project vs. user-level hook configuration
-    - Hook can modify tool inputs (v2.0.10+)
+    - Conditional hooks with `if` field for targeted execution
 
 ---
 
@@ -405,7 +421,7 @@ Subagents are autonomous specialized agents that Claude launches automatically f
     *   **Key point:** You don't manually select these - Claude chooses optimally
 
 *   **Demo: Plan Subagent (Plan Mode)**
-    *   Press `Shift+Tab+Tab` to activate Plan Mode
+    *   Type `/plan` or press `Shift+Tab+Tab` to activate Plan Mode
     *   **Prompt:** `Plan a comprehensive refactoring to modernize this Flask app with blueprints, better error handling, and structured logging`
     *   **Observe:** Plan subagent creates detailed strategy
     *   **Point out:** This uses strategic decomposition, different from direct execution
@@ -429,15 +445,21 @@ Subagents are autonomous specialized agents that Claude launches automatically f
 
 *   **Demo: Model Selection for Subagents**
     *   Explain that different subagents can use different models
-    *   Fast subagents (Explore) might use Haiku
-    *   Complex subagents (Plan) might use Opus
+    *   Fast subagents (Explore) might use Haiku 4.5
+    *   Complex subagents (Plan) might use Opus 4.6
     *   This optimizes both cost and performance
+
+*   **Demo: Custom Agent Definitions**
+    *   Show `.claude/agents/` directory for defining custom agents
+    *   Each agent is a markdown file with YAML frontmatter:
+      - `model`, `tools`, `effort`, `hooks`, `permissionMode`
+    *   **Prompt:** `Show me how to create a custom agent definition for security review`
 
 *   **Discussion Points:**
     - Subagents are transparent - you see when they activate
     - They're automatic - no manual selection needed
     - They specialize both tools and reasoning
-    - Different from custom commands (which are templates)
+    - Custom agents in `.claude/agents/` extend the built-in types
     - Think of them as "expert consultants" Claude calls in
 
 ---
@@ -463,7 +485,7 @@ Demonstrate how Skills, Hooks, Output Styles, and Subagents work together seamle
     ```
 
 *   **Demo: Complete Feature Development**
-    *   Activate Plan Mode: `Shift+Tab+Tab`
+    *   Activate Plan Mode: `/plan` or `Shift+Tab+Tab`
     *   **Prompt:** `Plan and implement a new training transcript PDF generation feature with:
         - REST controller following our Spring Boot standards
         - Service layer with business logic
@@ -544,25 +566,91 @@ Demonstrate how Skills, Hooks, Output Styles, and Subagents work together seamle
 
 ---
 
+### 12. Surfaces, Dispatch & Ultraplan
+
+**Project:** Any project
+
+Demonstrate the multi-surface ecosystem and cloud planning.
+
+**Demo Sequence:**
+
+*   **Demo: Five Surfaces Overview**
+    *   Show the 5 surfaces: CLI, VS Code, JetBrains, Desktop app, Web (claude.ai/code)
+    *   Emphasize: all share settings, CLAUDE.md, MCP servers, skills, hooks
+    *   **Discussion:** When would you use each surface?
+
+*   **Demo: Remote Session**
+    ```bash
+    # Start a cloud session from CLI
+    claude --remote "Analyze the certificate-service for dependency updates"
+    ```
+    *   Show the session appearing on claude.ai/code
+    *   Demonstrate `/teleport` to pull it back to terminal
+
+*   **Demo: Ultraplan**
+    *   **Prompt:** `/ultraplan Plan a migration of the shopping-service from Grails to Spring Boot`
+    *   **Observe:** Terminal shows `◇ ultraplan` status while Claude drafts in the cloud
+    *   When ready, review in browser with inline comments
+    *   **Point out:** You can keep working locally while ultraplan runs
+
+*   **Discussion: Dispatch**
+    *   Explain: send tasks from Claude mobile app → Desktop app
+    *   Use case: "On my commute, I send 'update the CI config' to my desktop"
+    *   Dispatch routes dev work to Code tab, other work to Cowork tab
+
+---
+
+### 13. Auto-Memory, Scheduled Tasks & Channels
+
+**Project:** Any project
+
+**Demo Sequence:**
+
+*   **Demo: Auto-Memory**
+    *   **Prompt:** `/memory`
+    *   Show how Claude has recorded project context, preferences, and patterns
+    *   **Point out:** Memory persists across sessions at `~/.claude/projects/<project>/memory/`
+    *   Discuss: what kinds of things Claude remembers (user prefs, feedback, project context)
+
+*   **Demo: `/loop` for Polling**
+    ```
+    /loop 2m check if there are any new issues on this repo
+    ```
+    *   **Observe:** Runs the prompt every 2 minutes
+    *   **Point out:** Session-scoped — stops when you exit
+    *   Compare with Desktop scheduling (persistent) and Cloud scheduling (always-on)
+
+*   **Discussion: Channels (Research Preview)**
+    *   Push events from Telegram, Discord, iMessage into a Claude session
+    *   Use case: monitoring alerts that Claude can act on
+    *   `--channels` flag to enable
+    *   Enterprise: admin must enable `channelsEnabled`
+
+---
+
 ## Course Conclusion: Bringing It All Together
 
 After completing all demonstrations and exercises, students should understand:
 
 1. **Core Features:** Code generation, exploration, testing, documentation
-2. **Customization:** CLAUDE.md, custom commands, output styles
-3. **Extensibility:** Skills, plugins, MCP integration
-4. **Automation:** Hooks for validation and workflow
-5. **Intelligence:** Subagents for specialized tasks
-6. **Enterprise Practices:** Security, team collaboration, quality gates
+2. **Surfaces:** CLI, VS Code, JetBrains, Desktop app, Web — and when to use each
+3. **Customization:** CLAUDE.md, skills, output styles, effort levels
+4. **Extensibility:** Plugins, MCP integration, custom agent definitions
+5. **Automation:** Hooks (command, HTTP, prompt, agent), scheduled tasks
+6. **Intelligence:** Subagents, Agent Teams, Ultraplan
+7. **Cross-Device:** Dispatch, Remote Control, session management
+8. **Enterprise Practices:** Auto Mode, security, team collaboration, quality gates
 
 **Final Exercise:** Have students design their ideal Claude Code setup for their organization, including:
 - Which skills they would create
 - What hooks would enforce quality
 - How they would structure a team plugin
-- Which output styles match their culture
+- Which surfaces their team would use for different workflows
+- What scheduled tasks would automate routine work
 
 **Next Steps:**
 - Practice with real work projects
 - Share configurations with team
+- Try `/powerup` for self-directed learning
 - Contribute to plugin ecosystem
 - Stay updated on new features

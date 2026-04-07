@@ -88,11 +88,11 @@ Kousen IT, Inc.
 
 <v-clicks>
 
-- **Foundation**: Installation, CLI basics, code exploration
+- **Foundation**: Installation, surfaces, CLI basics, code exploration
 - **Core Skills**: Testing, documentation, git operations
-- **Customization**: CLAUDE.md, custom commands, hooks, output styles
-- **Extensibility**: Skills, Plugins, MCP integration
-- **Advanced**: Plan Mode, Subagents, Extended Thinking, SDKs
+- **Customization**: CLAUDE.md, skills, hooks, output styles
+- **Extensibility**: Plugins, MCP integration
+- **Advanced**: Effort Levels, Plan Mode, Ultraplan, Subagents, Agent Teams, SDKs
 
 </v-clicks>
 
@@ -124,7 +124,7 @@ Kousen IT, Inc.
 
 <v-clicks>
 
-- Command-line AI tool for development
+- AI development tool across **5 surfaces**: CLI, VS Code, JetBrains, Desktop, Web
 - Context-aware codebase understanding
 - Autonomous, collaborative, and **multi-agent** modes
 - Multi-language support with **LSP code intelligence**
@@ -132,6 +132,99 @@ Kousen IT, Inc.
 - **Extensible**: Skills, Plugins, MCP, Hooks
 
 </v-clicks>
+
+---
+layout: image-right
+image: https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80
+backgroundSize: cover
+---
+
+# Five Surfaces
+
+<v-clicks>
+
+- **CLI (Terminal)** — Full-featured, primary interface
+- **VS Code Extension** — Inline diffs, @-mentions, plan review
+- **JetBrains Plugin** — IntelliJ, PyCharm, WebStorm
+- **Desktop App** — Native Mac/Windows with visual diffs, scheduling, connectors
+- **Web (claude.ai/code)** — Browser-based, no local setup required
+
+All surfaces share: settings, CLAUDE.md, MCP servers, skills, and hooks
+
+</v-clicks>
+
+---
+
+# Claude Desktop App
+
+<v-clicks>
+
+- **Three tabs**: Chat (general), Cowork (background agent), Code (interactive coding)
+- **Visual diff review** with inline comments and "Review code" button
+- **Live app preview** with embedded browser and auto-verify
+- **Scheduled tasks** — persistent, local, survives restarts
+- **Connectors** — GitHub, Slack, Linear, Notion, Google Calendar
+- **Computer use** (research preview) — Claude controls screen on macOS/Windows
+- **Parallel sessions** with automatic git worktree isolation
+
+</v-clicks>
+
+---
+
+# Claude Code on the Web
+
+<v-clicks>
+
+- **claude.ai/code** — Run tasks on Anthropic cloud infrastructure
+- **`--remote` flag**: Start a web session from CLI: `claude --remote "Fix the auth bug"`
+- **Diff view**: Review changes file-by-file before creating PRs
+- **Auto-fix PRs**: Claude responds to CI failures and review comments automatically
+- **`/teleport`**: Pull web sessions back to your local terminal
+- **Setup**: Connect GitHub, install Claude GitHub App, select environment
+- Also accessible from **Claude iOS and Android apps**
+
+</v-clicks>
+
+---
+
+# Dispatch & Remote Control
+
+<v-clicks>
+
+### Dispatch
+- Send tasks from your **phone** to your **Desktop app**
+- Dispatch routes dev tasks to Code tab, others to Cowork
+- Push notification when done or needs approval
+
+### Remote Control
+- Continue a **running CLI session** from phone or browser
+- `claude --rc` to start with Remote Control enabled
+- `/remote-control` to enable mid-session
+- Session runs locally — web/mobile is just a window into it
+
+</v-clicks>
+
+---
+
+# Ultraplan
+
+<v-clicks>
+
+- **Cloud-based planning** for complex, codebase-wide changes
+- Launch: `/ultraplan migrate the auth service from sessions to JWTs`
+- Or include "ultraplan" in any prompt
+- Claude drafts the plan in the cloud while **you keep working locally**
+- **Browser review**: Inline comments, emoji reactions, outline navigation
+- **Execute options**: Run in cloud (creates PR) or teleport back to terminal
+
+</v-clicks>
+
+```
+Terminal status indicators:
+◇ ultraplan           — Claude is researching and drafting
+◇ ultraplan needs your input  — Clarifying question
+◆ ultraplan ready     — Plan ready to review in browser
+```
 
 ---
 
@@ -190,9 +283,10 @@ with Next, Previous, and Play buttons"
 
 - **Command Mode** (default) - Interactive conversation
 - **Auto-Accept Mode** (Shift+Tab) - Autonomous execution
-- **Plan Mode** (Shift+Tab+Tab) - Review plans before execution
+- **Plan Mode** (Shift+Tab+Tab or `/plan`) - Review plans before execution
+- **Auto Mode** - Safety classifier eliminates permission prompts (opt-in)
+- **Effort levels**: `/effort low|medium|high` to control reasoning depth
 - **Model switch**: `Alt+P` / `Option+P` to change models mid-conversation
-- **Thinking toggle**: `Alt+T` to enable extended thinking
 
 </v-clicks>
 
@@ -399,42 +493,43 @@ Perfect for teams wanting standardized context visibility
 
 ---
 
-# Custom Slash Commands
+# Custom Slash Commands (Skills-First)
 
 <v-clicks>
 
-- **Project scope**: `.claude/commands/` (shared with team)
-- **User scope**: `~/.claude/commands/` (personal, use `/user:command`)
-- **Filename becomes command name** (e.g., `service.md` → `/service`)
-- Quick shortcuts for common workflows
+- **Skills** (`.claude/skills/`) are the modern, recommended approach
+- **Commands** (`.claude/commands/`) still work as a lightweight alternative
+- Both: filename becomes command name, `$ARGUMENTS` for dynamic content
+- **Project scope**: Shared with team via `.claude/skills/` or `.claude/commands/`
+- **User scope**: Personal via `~/.claude/skills/` or `~/.claude/commands/`
 
 </v-clicks>
 
 ---
 
-# Creating Slash Commands
+# Creating Custom Commands
 
 <v-clicks>
 
-- **Project commands** are shared with the entire team
-- **User commands** are personal and require `/user:` prefix
-- **Use `$ARGUMENTS`** for dynamic content in commands
+- **Simple commands**: Just a markdown file — no frontmatter needed
+- **Skills**: Add YAML frontmatter for model, effort, tools, paths
+- **Use `$ARGUMENTS`** or `$0`, `$1` for dynamic content
 
 </v-clicks>
 
 ```bash
-# Project commands (shared with team)
+# Quick command (lightweight)
 mkdir -p .claude/commands
 echo "Create service for $ARGUMENTS entity" > .claude/commands/service.md
 
-# User commands (personal)
+# User command (personal, requires /user: prefix)
 mkdir -p ~/.claude/commands  
 echo "Fix issue #$ARGUMENTS" > ~/.claude/commands/fix.md
 
 # Usage: /service User  or  /user:fix 123
 ```
 
-Real-world example - a powerful, personal documentation command:
+Real-world example:
 ```markdown
 # ~/.claude/commands/docs.md
 Update both the README.md and CLAUDE.md files as appropriate.
@@ -448,12 +543,14 @@ CLAUDE.md file as though the user invoked the init task.
 
 <v-clicks>
 
-- **Event-driven workflow automation** through shell commands
-- **Multiple hook types**: SessionEnd, PreToolUse, and custom hooks
-- **PreToolUse hooks**: Modify tool inputs before execution (v2.0.10+)
-- **SessionEnd hooks**: Clean up or finalize work when session ends (v1.0.85+)
+- **Event-driven workflow automation** with four hook types:
+  - **Command hooks**: Run shell commands on events
+  - **HTTP hooks**: POST JSON to a URL endpoint
+  - **Prompt hooks**: Ask Claude for yes/no decisions
+  - **Agent hooks**: Spawn subagents to verify conditions
+- **Conditional hooks**: `if` field filters when hooks run (permission rule syntax)
+- **PreToolUse**: Modify tool inputs, block dangerous operations
 - **Security controls**: Validate and filter operations before they run
-- **Post-tool condensing**: Automatically summarize verbose output
 - **Configuration**: `~/.claude/settings.json` or `.claude/settings.json`
 
 </v-clicks>
@@ -526,16 +623,18 @@ CLAUDE.md file as though the user invoked the init task.
 
 ---
 
-# New Hook Events (Since v2.1)
+# Hook Events
 
 <v-clicks>
 
-- **`Setup`**: Runs on repository initialization (install deps, configure tools)
-- **`ConfigChange`**: Enterprise security auditing when settings change
-- **`TeammateIdle`**: Fires when a team agent goes idle
-- **`TaskCompleted`**: Fires when a team task is marked complete
-- **`WorktreeCreate` / `WorktreeRemove`**: Custom VCS setup/teardown
-- **Agent-level hooks**: Skills and agents can define their own hooks in frontmatter
+- **Session**: `SessionStart`, `SessionEnd`, `InstructionsLoaded`
+- **Tools**: `PreToolUse`, `PostToolUse`, `PermissionRequest`, `PermissionDenied`
+- **Teams**: `TeammateIdle`, `TaskCreated`, `TaskCompleted`
+- **Files**: `FileChanged`, `CwdChanged`, `WorktreeCreate`, `WorktreeRemove`
+- **Config**: `ConfigChange`, `Notification`
+- **Context**: `PreCompact`, `PostCompact`
+- **MCP**: `Elicitation`, `ElicitationResult`
+- **Agent-level hooks**: Skills and agents define their own hooks in frontmatter
 
 </v-clicks>
 
@@ -557,10 +656,12 @@ CLAUDE.md file as though the user invoked the init task.
 {
   "chat:submit": "enter",
   "chat:newline": "shift+enter",
-  "chat:toggle_thinking": "alt+t",
-  "chat:switch_model": "alt+p"
+  "chat:switch_model": "alt+p",
+  "chat:open_external_editor": "ctrl+x ctrl+e"
 }
 ```
+
+Key shortcuts: `Ctrl+B` (background), `Ctrl+X Ctrl+K` (kill agents), `Ctrl+X Ctrl+E` (external editor)
 
 ---
 
@@ -790,6 +891,9 @@ Anthropic provides four production-ready Agent Skills:
 ---
 name: Java Spring Generator
 description: Generate Spring Boot components following team patterns
+effort: high
+paths:
+  - "src/**/*.java"
 ---
 
 # Instructions
@@ -800,6 +904,8 @@ When generating Spring Boot code:
 3. Include comprehensive JavaDoc
 4. Generate corresponding test files with @SpringBootTest
 ```
+
+New frontmatter: `effort`, `context: fork`, `paths`, `shell`, `model`
 
 </v-clicks>
 
@@ -857,27 +963,28 @@ layout: image-right
 image: https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80
 ---
 
-# Extended Thinking
+# Effort Levels
 
 <v-clicks>
 
-- Trigger deeper analysis with "think" in your prompts
-- Use **"think more"**, **"think harder"**, **"ultrathink"** for deeper reasoning
-- Toggle thinking with **`Alt+T`** keyboard shortcut
-- Shows thinking process as *italic gray text*
-- Perfect for complex architectural decisions
-- **Verification pattern**: "Before you finish, verify your solution and fix any issues"
-- **Note**: Thinking tokens count toward usage but provide higher quality results
+- **`/effort low|medium|high`** controls reasoning depth per response
+- **Low**: Fast responses for simple tasks (quick edits, lookups)
+- **Medium**: Balanced reasoning (default)
+- **High**: Deep analysis for complex architecture and debugging
+- **`max`**: Available on Opus 4.6 only — maximum reasoning
+- **Keywords still work**: "think", "think harder", "ultrathink" as shortcuts
+- Can set in skill frontmatter: `effort: high`
+- **Thinking summaries**: Off by default — enable with `showThinkingSummaries: true`
 
 </v-clicks>
 
 ```bash
-# Examples of extended thinking prompts
-"Think deeply about the best approach for implementing OAuth2 in our API. 
-Before you finish, verify your solution and fix any issues."
+# Set effort for the session
+/effort high
 
-"Think harder about potential security vulnerabilities in this code"
-"Think more about the tradeoffs between these two design patterns"
+# Or use keywords in your prompt
+"Ultrathink about the best approach for implementing OAuth2 in our API.
+Before you finish, verify your solution and fix any issues."
 ```
 
 ---
@@ -886,12 +993,12 @@ Before you finish, verify your solution and fix any issues."
 
 <v-clicks>
 
-- Press `Shift+Tab+Tab` to activate
-- Claude presents implementation plan
-- Review strategy before execution
-- Approve or modify approach
-- Perfect for complex changes
-- **Actually uses the Plan subagent** behind the scenes
+- Press `Shift+Tab+Tab` or type **`/plan`** to activate
+- Claude presents implementation plan before writing code
+- Review strategy, approve, or modify approach
+- Perfect for complex, multi-file changes
+- **Uses the Plan subagent** behind the scenes
+- **`/ultraplan`**: Cloud-based planning for codebase-wide changes (see Surfaces section)
 
 </v-clicks>
 
@@ -904,13 +1011,14 @@ Before you finish, verify your solution and fix any issues."
 - **Autonomous agents** that Claude launches for specialized tasks
 - **Dynamic selection**: Claude chooses appropriate subagent automatically
 - **Model selection**: Different subagents can use different models
-- **Common subagent types**:
+- **Built-in types**:
   - **Plan**: Strategic task decomposition and planning
   - **Explore**: Fast codebase exploration and search
-  - **Testing**: Test generation and quality assurance
   - **General-purpose**: Full read/write access for complex work
-- **Background execution**: Subagents can run in background (`Ctrl+B`)
-- **Worktree isolation**: Subagents can work in isolated git worktrees
+- **Custom agents**: Define in `.claude/agents/` as markdown with YAML frontmatter
+  - Specify: `model`, `tools`, `effort`, `hooks`, `permissionMode`
+- **Background execution**: `Ctrl+B` to background, `Ctrl+X Ctrl+K` to kill
+- **Worktree isolation**: `isolation: "worktree"` for safe parallel work
 
 </v-clicks>
 
@@ -929,7 +1037,7 @@ Claude launches subagents when tasks match specialized capabilities:
 "How does authentication work across the project?"
 
 # Triggers Plan subagent (Plan Mode)
-Shift+Tab+Tab or "Create a plan for adding OAuth"
+/plan or Shift+Tab+Tab or "Create a plan for adding OAuth"
 
 # Triggers Testing subagent
 "Generate comprehensive test coverage for UserService"
@@ -995,29 +1103,104 @@ Lead Agent ──→ creates tasks ──→ assigns teammates
 
 - **Background agents**: Run tasks while you keep working
   - `Ctrl+B` to background a running agent
-  - `Ctrl+F` to kill background agents (two-press confirmation)
+  - `Ctrl+X Ctrl+K` to kill all background agents
 - **Worktree isolation**: Agents work in temporary git worktrees
   - `claude -w` or `claude --worktree` starts in isolated worktree
   - Subagents support `isolation: "worktree"` for safe parallel work
   - Changes are on a separate branch — merge when ready
+- **`/batch` skill**: Parallel changes across many files using worktrees
 - **Combined power**: Background + worktree = fearless parallel development
 
 </v-clicks>
 
 ---
 
-# Cloud Handoff & Session Management
+# Session Management & Cross-Surface Workflows
 
 <v-clicks>
 
-- **Cloud handoff** (`&` prefix): Send a task to run on the web
-  - Type `& refactor the auth module` to hand off to cloud
-  - Continue working locally while cloud processes
+- **`--remote`**: Start a cloud session: `claude --remote "Fix the auth bug"`
+- **`/teleport`**: Pull a web session back to your terminal
+- **Dispatch**: Send tasks from phone → Desktop app (Pro/Max)
 - **Named sessions**: `/rename my-feature` for easy identification
 - **PR-linked sessions**: `claude --from-pr 123` resumes PR context
-- **Automatic memory**: Claude records and recalls across sessions
-- **Session forking**: `/fork` to branch a conversation
+- **Session branching**: `/branch` to branch a conversation
 - **Resume picker**: `claude --resume` shows up to 50 recent sessions
+- **Auto-memory**: Claude records and recalls context across sessions
+
+</v-clicks>
+
+---
+
+# Auto-Memory
+
+<v-clicks>
+
+- Claude **automatically records and recalls** memories as it works
+- Stored at `~/.claude/projects/<project>/memory/`
+- **`MEMORY.md`** index file loaded at session start (first 200 lines)
+- Topic files loaded on demand when relevant
+- **`/memory`** command to view and manage memories
+- Memory types: user preferences, feedback, project context, references
+- Subagents can maintain their own auto memory
+- Toggle with `autoMemoryEnabled` setting
+
+</v-clicks>
+
+---
+
+# Auto Mode
+
+<v-clicks>
+
+- **Eliminates permission prompts** via a background safety classifier
+- Classifier reviews each action and allows/blocks automatically
+- **Different from Auto-Accept** (`Shift+Tab`): Auto Mode is intelligent, not blanket
+- **Allows**: Local file ops, dependency installs, read-only HTTP, pushing to current branch
+- **Blocks**: Downloading + executing code, production deploys, force pushes, IAM changes
+- **Requirements**: Team/Enterprise/API plan, Sonnet 4.6 or Opus 4.6
+- Enable: `--enable-auto-mode` or cycle with `Shift+Tab`
+
+</v-clicks>
+
+---
+
+# Scheduled Tasks
+
+<v-clicks>
+
+| | **`/loop`** | **Desktop** | **Cloud** |
+|---|---|---|---|
+| **Runs on** | Your machine | Your machine | Anthropic cloud |
+| **Requires open session** | Yes | No | No |
+| **Requires machine on** | Yes | Yes | No |
+| **Persistent** | No | Yes | Yes |
+| **Local file access** | Yes | Yes | No |
+| **Min interval** | 1 minute | 1 minute | 1 hour |
+
+</v-clicks>
+
+```bash
+# Session-scoped polling
+/loop 5m check if the deployment finished
+
+# Cloud scheduling (from CLI)
+/schedule
+```
+
+---
+
+# Channels (Research Preview)
+
+<v-clicks>
+
+- **Push events** from external sources into running Claude Code sessions
+- Supported: **Telegram**, **Discord**, **iMessage** (via plugins)
+- Two-way: Claude reads events and replies back
+- Use cases: chat bridge from phone, CI/monitoring webhooks
+- **`--channels`** flag to enable: `claude --channels plugin:telegram@claude-plugins-official`
+- Requires claude.ai login
+- Enterprise: admin must enable `channelsEnabled`
 
 </v-clicks>
 
@@ -1206,7 +1389,7 @@ claude -p "Check for security issues" --allowed-tools read,grep
 
 ---
 
-# VS Code Extension (Beta)
+# VS Code Extension
 
 <v-clicks>
 
@@ -1215,7 +1398,6 @@ claude -p "Check for security issues" --allowed-tools read,grep
 - **Context-aware**: Accesses your workspace files and settings
 - **All Claude Code features**: Skills, MCP, custom commands available
 - **Installation**: Search "Claude Code" in VS Code Extensions marketplace
-- **Beta status**: Actively developed, new features being added
 
 </v-clicks>
 
@@ -1226,18 +1408,15 @@ claude -p "Check for security issues" --allowed-tools read,grep
 <v-clicks>
 
 ### Integrated Workflow
-- Ask questions about code in sidebar
 - Reference files with `@` syntax directly in VS Code
-- Generate and edit code without context switching
 - View diffs and approve changes inline
+- **Session management** with AI-generated titles, rename, fork
+- **Plan view panel** with full markdown and commenting
+- **MCP server management** via `/mcp` in extension
+- **Compaction display** as collapsible card
 
-### Best Use Cases
-- Developers who prefer IDE-native workflows
-- Teams already standardized on VS Code
-- Projects with complex workspace configurations
-- Rapid iteration with immediate feedback
-
-**Note**: Terminal Claude Code remains the primary experience with fullest feature set
+### Also Available
+- **JetBrains Plugin**: IntelliJ, PyCharm, WebStorm — same core features
 
 </v-clicks>
 
@@ -1360,15 +1539,17 @@ Read(src/*)             # Allow reading source files
 
 ---
 
-# Permission Patterns
+# Permission Modes
 
 <v-clicks>
 
-### Common Permission Profiles
-- **Development Mode**: Full access for active coding
-- **Review Mode**: Read-only for code reviews
-- **Safe Mode**: Limited tools for sensitive operations
-- **CI/CD Mode**: Specific tools for automation
+### Six modes (cycle with `Shift+Tab`)
+- **Default**: Prompts for each action
+- **Accept Edits**: Auto-approves file edits
+- **Plan**: Read-only exploration, no edits
+- **Auto**: Safety classifier decides (Team/Enterprise/API)
+- **Don't Ask**: Only pre-approved tools run (CI/CD)
+- **Bypass Permissions**: No prompts at all
 
 </v-clicks>
 
@@ -1578,6 +1759,30 @@ curl -fsSL https://storage.googleapis.com/anthropic-releases/claude-cli/install.
 - Document successful patterns
 - Review AI-generated code together
 - Establish team conventions
+
+</v-clicks>
+
+---
+
+# New & Notable Commands
+
+<v-clicks>
+
+| Command | Description |
+|---------|-------------|
+| `/effort low\|medium\|high` | Set reasoning depth |
+| `/plan` | Enter Plan Mode from prompt |
+| `/ultraplan` | Cloud-based planning session |
+| `/branch` | Branch the conversation (was `/fork`) |
+| `/copy N` | Copy Nth-latest response to clipboard |
+| `/context` | Get context optimization suggestions |
+| `/color` | Set prompt-bar color for session |
+| `/powerup` | Interactive feature lessons |
+| `/loop 5m prompt` | Recurring prompt execution |
+| `/batch` | Parallel changes across codebase |
+| `/memory` | View and manage auto-memory |
+
+**Removed**: `/tag`, `/vim` (use `/config`). **Deprecated**: `/output-style` (use `/config`)
 
 </v-clicks>
 

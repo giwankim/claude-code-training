@@ -298,7 +298,7 @@ Use the `exercises/java/shopping-service` (Grails/Groovy) project or any legacy 
 ## Lab 6: Advanced Workflows
 
 **Duration**: 60 minutes
-**Goal**: Master advanced Claude Code features including Plan Mode, Skills, Plugins, Output Styles, Hooks, MCP, and Agent Teams
+**Goal**: Master advanced Claude Code features including Plan Mode, Skills, Plugins, Output Styles, Hooks, MCP, Agent Teams, and Surfaces
 
 ### Setup
 
@@ -309,7 +309,7 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
 #### Part A: Plan Mode and Subagents (5 minutes)
 
 1. **Plan Mode usage**:
-   - Press `Shift+Tab+Tab` to activate Plan Mode
+   - Press `Shift+Tab+Tab` or type `/plan` to activate Plan Mode
    ```
    Plan a comprehensive improvement to add error handling and logging to this Flask application
    ```
@@ -317,17 +317,18 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
    - Observe that Plan Mode uses the Plan subagent
    - Execute step by step or approve the entire plan
 
-2. **Understanding Subagents**:
+2. **Understanding Subagents and Effort Levels**:
    ```
    Explain which subagents you use and when they activate automatically
    ```
-   - Learn about Explore, Plan, Testing, and General-purpose subagents
+   - Learn about Explore, Plan, and General-purpose subagents
    - Understand how Claude selects the right agent for each task
-   - **Keyboard shortcuts**: `Alt+T` toggles thinking, `Alt+P` switches models mid-conversation
+   - **Effort levels**: `/effort low|medium|high` controls reasoning depth
+   - **Keyboard shortcuts**: `Alt+P` switches models mid-conversation
 
 #### Part B: Skills and Plugins (15 minutes)
 
-> **Note**: Since v2.1, Skills and slash commands are a unified system. Skills now support hot-reload — edit a SKILL.md and changes take effect immediately without restarting.
+> **Note**: Skills (`.claude/skills/`) are the primary extensibility mechanism. Custom slash commands (`.claude/commands/`) remain as a lightweight alternative. Skills support YAML frontmatter for `effort`, `model`, `paths`, and more. Hot-reload — edit a SKILL.md and changes take effect immediately.
 
 3. **Explore Built-in Skills**:
    ```
@@ -553,6 +554,30 @@ Navigate to the `exercises/python/weather-app` directory for this lab.
    - Changes don't affect your main working tree
    - On exit, you'll be asked to keep or remove the worktree
 
+#### Part I: Surfaces & Remote Workflows (10 minutes, optional)
+
+23. **Explore `/powerup`** (Self-learning):
+   ```
+   /powerup
+   ```
+   - Browse interactive lessons on Claude Code features
+   - Try a lesson on a feature you haven't used before
+
+24. **Try Remote Session** (if claude.ai/code access available):
+   ```bash
+   # Start a cloud session from your terminal
+   claude --remote "Analyze the weather-app for potential performance improvements"
+   ```
+   - Observe the session running on Anthropic cloud
+   - Visit claude.ai/code to see the session in browser
+   - Try `/teleport` to pull it back to your terminal
+
+25. **Discussion: Surfaces & Dispatch**:
+   - Review the 5 surfaces: CLI, VS Code, JetBrains, Desktop app, Web
+   - Discuss Dispatch: sending tasks from phone to desktop
+   - When would you use each surface?
+   - How do scheduled tasks differ across surfaces?
+
 ### Expected Outcomes
 
 After completing this lab, you will:
@@ -568,6 +593,8 @@ After completing this lab, you will:
 - **Launch and coordinate Agent Teams for parallel work**
 - **Use worktree isolation for safe experimentation**
 - **Run background agents for concurrent workflows**
+- **Understand the 5 Claude Code surfaces and when to use each**
+- **Use `/powerup` for self-directed feature learning**
 
 ### Troubleshooting
 
