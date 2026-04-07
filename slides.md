@@ -975,24 +975,20 @@ image: https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0
 
 <v-clicks>
 
-- **`/effort low|medium|high`** controls reasoning depth per response
-- **Low**: Fast responses for simple tasks (quick edits, lookups)
+- **`/effort low|medium|high`** controls reasoning depth
+- **Low**: Fast responses for simple tasks
 - **Medium**: Balanced reasoning (default)
-- **High**: Deep analysis for complex architecture and debugging
-- **`max`**: Available on Opus 4.6 only — maximum reasoning
-- **Keywords still work**: "think", "think harder", "ultrathink" as shortcuts
+- **High**: Deep analysis for complex architecture
+- **Keywords still work**: "think", "think harder", "ultrathink"
 - Can set in skill frontmatter: `effort: high`
-- **Thinking summaries**: Off by default — enable with `showThinkingSummaries: true`
 
 </v-clicks>
 
 ```bash
-# Set effort for the session
 /effort high
 
 # Or use keywords in your prompt
-"Ultrathink about the best approach for implementing OAuth2 in our API.
-Before you finish, verify your solution and fix any issues."
+"Ultrathink about the best approach for implementing OAuth2"
 ```
 
 ---
@@ -1236,33 +1232,19 @@ Lead Agent ──→ creates tasks ──→ assigns teammates
 
 <v-clicks>
 
-### Import from Claude Desktop
 ```bash
+# Import from Claude Desktop
 claude mcp add-from-claude-desktop
-```
-Automatically imports MCP servers from Claude Desktop config
 
-### Manual Configuration
-```bash
-# Project-scoped (default)
-claude mcp add <server-name>
-
-# User-scoped (available across all projects)
-# Remote HTTP transport
+# Add remote server (HTTP)
 claude mcp add --transport http context7 https://mcp.context7.com/mcp
-# Local execution
-claude mcp add context7 -- npx -y @upstash/context7-mcp
 
-# Management commands
-claude mcp list
-claude mcp remove <server-name>
-/mcp enable <server-name>    # Quick toggle in session
-/mcp disable <server-name>
+# Add local server
+claude mcp add context7 -- npx -y @upstash/context7-mcp
 ```
 
-### Config Locations
-- **Claude Desktop**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- **Claude Code (project)**: `.mcp.json` in project root
+- **Project config**: `.mcp.json` in project root
+- **Management**: `claude mcp list`, `/mcp enable|disable`
 
 </v-clicks>
 
@@ -1860,20 +1842,6 @@ curl -fsSL https://storage.googleapis.com/anthropic-releases/claude-cli/install.
 
 </v-clicks>
 
-</div>
-
----
-
-# Community & Social
-
-<div class="flex flex-col items-center mt-4">
-  <div class="max-w-md mx-auto scale-90">
-    <Bluesky id="at://did:plc:dfl6zqxuwaytxeyankzivs76/app.bsky.feed.post/3lsmcosqat22d" />
-  </div>
-  
-  <p class="text-center mt-2 text-gray-500 text-sm">
-    Follow the Claude Code community for updates and tips
-  </p>
 </div>
 
 ---
