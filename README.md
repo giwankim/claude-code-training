@@ -22,7 +22,7 @@ This repository contains all the materials for the Claude Code Training course:
 
 - **`slides.md`**: The main Slidev presentation with interactive demos
 - **`lab_handout.md`**: Progressive hands-on labs from beginner to advanced
-- **`exercises.md`**: Instructor-led demos and exercises using real codebases
+- **`instructor-guide.md`**: Instructor-led demos and exercises using real codebases
 - **`half-day-outline.md`**: Condensed outline for half-day training sessions
 - **`events/`**: Event-specific descriptions and course configurations
 - **`custom-commands.md`**: Showcase of powerful custom slash commands for workflow automation
@@ -75,7 +75,7 @@ Students can explore and use pre-built custom slash commands:
 - Commands include Java modernization, Spring generators, security reviews, and more
 
 ### Teaching Notes
-The `exercises.md` file contains detailed instructor guidance with specific prompts and a progressive story arc using the `flask-api` project as the primary demonstration vehicle.
+The `instructor-guide.md` file contains detailed instructor guidance with specific prompts and a progressive story arc using the `flask-api` project as the primary demonstration vehicle.
 
 ## 🏗️ Course Philosophy
 

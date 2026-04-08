@@ -7,7 +7,7 @@ This project contains comprehensive training materials for teaching Claude Code 
 ### Core Course Materials
 - **`slides.md`**: Main Slidev presentation with progressive learning path
 - **`lab_handout.md`**: Six progressive hands-on labs (Lab 0-6) for students
-- **`exercises.md`**: Detailed instructor guidance with specific demo scenarios
+- **`instructor-guide.md`**: Detailed instructor guidance with specific demo scenarios
 - **`exercises/`**: Collection of real-world sample projects across multiple languages
 
 ### Sample Projects Architecture
